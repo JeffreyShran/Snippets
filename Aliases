@@ -6,3 +6,10 @@ alias sublist3r-one=". <(cat domains | awk '{print \"sublist3r \"$1 \" -o \" $1 
 alias dirsearch='python3 /path/to/dirsearch/dirsearch.py -u '
 alias dirsearch-one=". <(cat domains | awk '{print \"dirsearch \"\$1 \" -e *\"}')"
 alias openredirect=". <(cat domains | awk '{print \"dirsearch \"\$1 \" -w /path/to/dirsearch/db/open_redirect_wordlist.txt -e *\"}')"
+
+
+#~/.bash_aliases
+
+function cs () {
+    cd "$@" && ls
+    }

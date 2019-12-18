@@ -13,16 +13,16 @@
 # -x prints each command that is going to be executed.
 set -ex
 
-# Before we proceed check that we have internet connectivity!
+# Before we proceed check that we have a connection to the scary outside world.
 # -q Quiet.
 # -c Number of pings to perform.
 # $? Returns the exit status of the command previously executed. If ping is successful, $? will return 0. If not, it will return another number.
 ping -q -c1 google.co.uk > /dev/null
  
 # Update, upgrade and clean up before we begin.
-# -qq Implies -y so is ommited.
+# -qq Implies -y so is omitted.
 apt update -qq && apt upgrade -qq && apt autoremove -qq
 
-
-
-
+# Remove ~/.bash_aliases and recreate from GitHub file.
+rm ~/.bash_aliases
+wget -q https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/bash_aliases -O ~/.bash_aliases

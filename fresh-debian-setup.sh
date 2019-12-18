@@ -17,7 +17,7 @@ set -ex
 # -q Quiet.
 # -c Number of pings to perform.
 # $? Returns the exit status of the command previously executed. If ping is successful, $? will return 0. If not, it will return another number.
-ping -q -c5 google.co.uk > /dev/null
+ping -q -c1 google.co.uk > /dev/null
  
 # Update, upgrade and clean up before we begin.
 # -qq Implies -y so is ommited.

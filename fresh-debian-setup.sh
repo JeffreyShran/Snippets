@@ -20,9 +20,11 @@ set -ex
 ping -q -c1 google.co.uk > /dev/null
  
 # Update, upgrade and clean up before we begin.
-# -qq Implies -y so is omitted.
+# -qq Implies -y, therefore omitted.
 apt update -qq && apt upgrade -qq && apt autoremove -qq
 
 # Remove ~/.bash_aliases and recreate from GitHub file.
+# -q Quiet.
+# -O Output file.
 rm ~/.bash_aliases
 wget -q https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/bash_aliases -O ~/.bash_aliases

@@ -18,35 +18,43 @@ set -ex
 # -c Number of pings to perform.
 # $? Returns the exit status of the command previously executed. If ping is successful, $? will return 0. If not, it will return another number.
 ping -q -c1 google.co.uk > /dev/null
- 
-# Update, upgrade and clean up before we begin.
-# -qq Implies -y, therefore omitted.
-apt update -qq && apt upgrade -qq && apt autoremove -qq
 
-# Remove ~/.bash_aliases and recreate from GitHub file.
+# Provide a username to use as the main user.
+USERNAME='jeff'
+
+# Change the frontend default behavior of debconf to noninteractive.
+# This helps to make the installs and updates etc non-interactive. (i.e You don't get asked questions)
+# Otherwise you have to run something like this each time as the noninteractive will not persist: sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn.
+dpkg-reconfigure debconf --frontend=noninteractive
+
+# Update, upgrade and clean up.
+# -qq should imply -y but doesn't work so using -qy here.
+apt update -qy && apt upgrade -qy && apt autoremove -qy
+
+# Remove ~/.bash_aliases and recreate from GitHub file. These are personalised bash commands.
 # -q Quiet.
 # -O Output file.
 rm ~/.bash_aliases
 wget -q https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/bash_aliases -O ~/.bash_aliases
 
 # Add sudo user and grant privileges
-useradd --create-home --shell "/bin/bash" --groups sudo jeff
+useradd --create-home --shell "/bin/bash" --groups sudo $USERNAME
 
 # Create SSH 
 # Guide from - https://www.digitalocean.com/community/tutorials/automating-initial-server-setup-with-ubuntu-18-04
 
 
-# Install core utilites
+# Install core utilities. The for loop will check if the application exists before attempting an install.
 # Script from - https://unix.stackexchange.com/a/434061
 CORE_PROGRAMS=(git python3 python3-pip curl)
 
 for PROGRAM in "${CORE_PROGRAMS[@]}"; do
     if ! command -v "$CORE_PROGRAMS" > /dev/null 2>&1; then
-        apt-get install "$CORE_PROGRAMS" -qq
+        apt-get install "$CORE_PROGRAMS" -qy
     fi
 done
 
-# setup go
+# Setup & install golang.
 # $(..) is command Substitution and is equivalent to `..`. Basically menaing to execute the command within. See "man bash".
 ORIGINAL_GO=$(which go)
 rm $ORIGINAL_GO
@@ -64,6 +72,9 @@ PROGRAMS=(git python3 python3-pip curl)
 
 for PROGRAM in "${PROGRAMS[@]}"; do
     if ! command -v "$PROGRAMS" > /dev/null 2>&1; then
-        apt-get install "$PROGRAMS" -qq
+        apt-get install "$PROGRAMS" -qy
     fi
 done
+
+# Reminders and advisories
+echo "As root run 'passwd $USERNAME' to set the password. Currently it is blank and insecure."

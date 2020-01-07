@@ -20,11 +20,11 @@
 ### This allows us to keep the script tidy ###
 # -e exits as soon as any line in the bash script fails.
 # -x prints each command that is going to be executed.
-set -ex
+set -e
 
 ### Needs root access to run
 # id -u used as POSIX compliant: https://askubuntu.com/a/30157
-if ! [ $(id -u) = 0 ]; then
+if ! [ $(id -u) = 0 ] > /dev/null 2>&1; then
    echo "This script needs to be ran as root. Use 'sudo' or switch to 'sudo -i' and try again."
    #exit 1
 fi

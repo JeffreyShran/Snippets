@@ -13,6 +13,9 @@
 ### To execute the script, run the below command. Taken from - https://askubuntu.com/a/992451 
 ### -O -  Allows us to output to nowhere and into the bash pipe.
 ### wget -O - https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/fresh-debian-setup.sh | sudo bash
+### Alternatively use cURL.
+### ?$(date +%s) will trick any cache servers into thinking it's a new file: https://stackoverflow.com/a/42263514
+### curl -L https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/fresh-debian-setup.sh?$(date +%s) | bash
 
 ### This allows us to keep the script tidy ###
 # -e exits as soon as any line in the bash script fails.
@@ -23,7 +26,7 @@ set -ex
 # id -u used as POSIX compliant: https://askubuntu.com/a/30157
 if ! [ $(id -u) = 0 ]; then
    echo "This script needs to be ran as root. Use 'sudo' or switch to 'sudo -i' and try again."
-   exit 1
+   #exit 1
 fi
 
 ### Before we proceed check that we have a connection to the scary outside world ###

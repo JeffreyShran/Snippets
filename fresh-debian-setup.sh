@@ -19,14 +19,18 @@
 # -x prints each command that is going to be executed.
 set -ex
 
+### Needs root access to run
+# id -u used as POSIX compliant: https://askubuntu.com/a/30157
+if ! [ $(id -u) = 0 ]; then
+   echo "This script needs to be ran as root. Use 'sudo' or switch to 'sudo -i' and try again."
+   exit 1
+fi
+
 ### Before we proceed check that we have a connection to the scary outside world ###
 # -q Quiet.
 # -c Number of pings to perform.
 # Returns the exit status of the command previously executed. If ping is successful then it will return 0. If not, it will return another number.
 ping -q -c1 google.co.uk > /dev/null
-
-### Name of the user to create and grant sudo privileges ###
-USERNAME=jeff
 
 ### Change the frontend default behavior of debconf to noninteractive ###
 # This helps to make the installs and updates etc non-interactive. (i.e You don't get asked questions)

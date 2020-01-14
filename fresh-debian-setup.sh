@@ -56,7 +56,6 @@ useradd --create-home --shell "/bin/bash" --groups sudo "${USERNAME}"
 ### SETUP SSH ###
 # Guide from - https://www.digitalocean.com/community/tutorials/automating-initial-server-setup-with-ubuntu-18-04
 
-
 ### Install core utilities. The for loop will check if the application exists before attempting an install ###
 # Script from - https://unix.stackexchange.com/a/434061
 CORE_PROGRAMS=(git python3 python3-pip curl)
@@ -64,7 +63,9 @@ CORE_PROGRAMS=(git python3 python3-pip curl)
 for PROGRAM in "${CORE_PROGRAMS[@]}"; do
     if ! command -v "$CORE_PROGRAMS" > /dev/null 2>&1; then
         apt-get install "$CORE_PROGRAMS" -qy
+        echo "Installed $PROGRAMS"
     fi
+    echo "$PROGRAMS already installed"
 done
 
 ### Setup & install golang ###

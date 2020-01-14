@@ -78,6 +78,7 @@ tar -C /usr/local -xzf $VERSION.linux-amd64.tar.gz
 echo "export GOPATH=~/go" >> ~/.profile # source intentionally not used here as it appears on next line.
 echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source ~/.profile
 rm $VERSION.linux-amd64.tar.gz
+echo "Installed golang"
 
 ### Install everything else ###
 # Script from - https://unix.stackexchange.com/a/434061
@@ -86,7 +87,9 @@ PROGRAMS=(git python3 python3-pip curl)
 for PROGRAM in "${PROGRAMS[@]}"; do
     if ! command -v "$PROGRAMS" > /dev/null 2>&1; then
         apt-get install "$PROGRAMS" -qy
+        echo "Installed $PROGRAMS"
     fi
+    echo "$PROGRAMS already installed"
 done
 
 ### Reminders and advisories ###

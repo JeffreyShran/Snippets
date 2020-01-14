@@ -12,10 +12,10 @@
 ###
 ### To execute the script, run the below command. Taken from - https://askubuntu.com/a/992451 
 ### -O -  Allows us to output to nowhere and into the bash pipe.
-### wget -O - https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/fresh-debian-setup.sh | sudo bash
+### wget -O - https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh | sudo bash
 ### Alternatively use cURL.
 ### ?$(date +%s) will trick any cache servers into thinking it's a new file: https://stackoverflow.com/a/42263514
-### curl -L https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/fresh-debian-setup.sh?$(date +%s) | bash
+### curl -L https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s) | bash
 
 ### This helps us to keep the script tidy ###
 # -e exits as soon as any line in the bash script fails.
@@ -48,7 +48,7 @@ apt update -qy && apt upgrade -qy && apt autoremove -qy
 # -q Quiet.
 # -O Output file.
 rm ~/.bash_aliases
-wget -q https://raw.githubusercontent.com/tooth-N-tail/Snippets/master/bash_aliases -O ~/.bash_aliases
+wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases -O ~/.bash_aliases
 
 ### Add sudo user and grant privileges ###
 useradd --create-home --shell "/bin/bash" --groups sudo "${USERNAME}"

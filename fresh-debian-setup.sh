@@ -13,27 +13,18 @@
 ### To execute the script, run the below command. Taken from - https://askubuntu.com/a/992451 
 ### -O -  Allows us to output to nowhere and into the bash pipe.
 ### wget -O - https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh | sudo bash
-### Alternatively use cURL.
-### ?$(date +%s) will trick any cache servers into thinking it's a new file: https://stackoverflow.com/a/42263514
-### curl -L https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s) | bash
 
 ### This helps us to keep the script tidy ###
 # -e exits as soon as any line in the bash script fails.
 # -x prints each command that is going to be executed.
 set -e
 
-### Needs root access to run
+### Needs root access to continue ###
 # id -u used as POSIX compliant: https://askubuntu.com/a/30157
 if ! [ $(id -u) = 0 ] > /dev/null 2>&1; then
-   echo "This script needs to be ran as root. Use 'sudo' or switch to 'sudo -i' and try again."
+   echo "This script needs to be ran as interactive root. Switch to 'sudo -i' and try again."
    exit 1
 fi
-
-### Before we proceed check that we have a connection to the scary outside world ###
-# -q Quiet.
-# -c Number of pings to perform.
-# Returns the exit status of the command previously executed. If ping is successful then it will return 0. If not, it will return another number.
-ping -q -c1 google.co.uk > /dev/null
 
 ### Change the frontend default behaviour of debconf to noninteractive ###
 # This helps to make the installs and updates etc non-interactive. (i.e You don't get asked questions)
@@ -50,15 +41,9 @@ apt update -qy && apt upgrade -qy && apt autoremove -qy
 rm ~/.bash_aliases
 wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases -O ~/.bash_aliases
 
-### Add sudo user and grant privileges ###
-useradd --create-home --shell "/bin/bash" --groups sudo "${USERNAME}"
-
-### SETUP SSH ###
-# Guide from - https://www.digitalocean.com/community/tutorials/automating-initial-server-setup-with-ubuntu-18-04
-
 ### Install core utilities. The for loop will check if the application exists before attempting an install ###
 # Script from - https://unix.stackexchange.com/a/434061
-CORE_PROGRAMS=(git python3 python3-pip curl)
+CORE_PROGRAMS=(git curl sudo)
 
 for PROGRAM in "${CORE_PROGRAMS[@]}"; do
     if ! command -v "$CORE_PROGRAMS" > /dev/null 2>&1; then
@@ -81,9 +66,8 @@ echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source
 rm $VERSION.linux-amd64.tar.gz
 echo "Installed golang"
 
-### Install everything else ###
-# Script from - https://unix.stackexchange.com/a/434061
-PROGRAMS=(git python3 python3-pip curl)
+### Install everything else. The for loop will check if the application exists before attempting an install ###
+PROGRAMS=(xfce4 xfce4-goodies gnome-icon-theme tightvncserver iceweasel)
 
 for PROGRAM in "${PROGRAMS[@]}"; do
     if ! command -v "$PROGRAMS" > /dev/null 2>&1; then
@@ -93,5 +77,48 @@ for PROGRAM in "${PROGRAMS[@]}"; do
     echo "$PROGRAMS already installed"
 done
 
-### Reminders and advisories ###
-echo "As root run 'passwd $USERNAME' to set the password. Currently it is blank and insecure."
+### Setup VNC ###
+# Generate a random password for later
+AUTO_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+# Create new user 'vnc'
+useradd --create-home --shell "/bin/bash" --groups sudo vnc
+# Set 'vnc'' users password
+echo -e "$AUTO_PASSWORD\n$AUTO_PASSWORD" | passwd vnc
+# Running commands as vnc user: https://www.cyberciti.biz/faq/how-to-run-multiple-commands-in-sudo-under-linux-or-unix/
+sudo -u vnc -- sh -c <<EOF
+echo -e "$AUTO_PASSWORD\n$AUTO_PASSWORD" | vncpasswd
+# Start vncserver. Connections are on port 5901. Your second display will be served on port 5902. Running now to auto Initialise.
+vncserver
+# To stop your VNC server on Display 1 - We're stopping here to make changes.
+vncserver -kill :1
+### Creating a systemd Service to Start VNC Server Automatically
+# Our script will help us to modify settings and start/stop VNC Server easily.
+echo "[label /usr/local/bin/myvncserver] #!/bin/bash PATH="$PATH:/usr/bin/" DISPLAY="1" DEPTH="16" GEOMETRY="1024x768" OPTIONS="-depth ${DEPTH} -geometry ${GEOMETRY} :${DISPLAY}" case "$1" in start) /usr/bin/vncserver ${OPTIONS} ;; stop) /usr/bin/vncserver -kill :${DISPLAY} ;; restart) $0 stop $0 start ;; esac exit 0" > /usr/local/bin/myvncserver
+# Make our file executable
+chmod +x /usr/local/bin/myvncserver
+#
+# If you'd like, you can call the script manually to start/stop VNC Server on port 5901 with your desired configuration:
+#   sudo /usr/local/bin/myvncserver start
+#   sudo /usr/local/bin/myvncserver stop
+#   sudo /usr/local/bin/myvncserver restart
+#
+# We can now create a unit file for our service. Unit files are used to describe services and tell the computer what to do to start/stop or restart the service.
+echo "[label /lib/systemd/system/myvncserver.service] [Unit] Description=Manage VNC Server on this droplet [Service] Type=forking ExecStart=/usr/local/bin/myvncserver start ExecStop=/usr/local/bin/myvncserver stop ExecReload=/usr/local/bin/myvncserver restart User=vnc [Install] WantedBy=multi-user.target" > /lib/systemd/system/myvncserver.service
+#Now we can reload systemctl and enable our service
+systemctl daemon-reload
+systemctl enable myvncserver.service
+#
+# You've enabled your new service now. Use these commands to start, stop or restart the service using the systemctl command
+#   sudo systemctl start myvncserver.service
+#   sudo systemctl stop myvncserver.service
+#   sudo systemctl restart myvncserver.service
+#
+EOF
+
+### Connection string from powershell to cloud server: https://www.revsys.com/writings/quicktips/ssh-tunnel.html
+# ssh -f user@personal-server.com -L 2000:personal-server.com:25 -N
+
+### FEEDBACK FOR USER ###
+echo "Your VNC and 'vnc' users password are both set to $AUTO_PASSWORD - WRITE IT DOWN OR CHANGE THEM NOW!!"
+echo "Run 'passwd vnc' to set the users password."
+echo "Run 'vncpasswd' to set the VNC one."

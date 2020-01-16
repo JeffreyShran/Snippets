@@ -10,6 +10,8 @@
 ### https://dotnetrussell.com/SetupBare.sh
 ### https://unix.stackexchange.com/a/434061
 ###
+### VNC Tested on UltraVNC: https://www.uvnc.com/downloads/ultravnc/126-download-ultravnc-1224.html
+###
 ### To execute the script, run the below command. Taken from - https://askubuntu.com/a/992451 
 ### -O -  Allows us to output to nowhere and into the bash pipe.
 ### wget -O - https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh | sudo bash

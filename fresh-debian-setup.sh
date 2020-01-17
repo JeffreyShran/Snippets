@@ -13,9 +13,6 @@
 #    https://dotnetrussell.com/SetupBare.sh
 #    https://unix.stackexchange.com/a/434061
 #
-# VNC Tested on UltraVNC:
-#    https://www.uvnc.com/downloads/ultravnc/126-download-ultravnc-1224.html
-#
 # To execute the script, run the below command. Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe.
 #    wget -O - https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh | sudo bash
 #---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -65,85 +62,6 @@ tar -C /usr/local -xzf $VERSION.linux-amd64.tar.gz
 echo "export GOPATH=~/go" >> ~/.profile                                        # source intentionally not used here as it appears on next line.
 echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source ~/.profile
 rm $VERSION.linux-amd64.tar.gz
-
-# Setup VNC
-#AUTOPASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)  # Generate a random password for later
-#useradd --create-home --shell "/bin/bash" --groups sudo vnc                    # Create new user 'vnc'--create-home intentionally used for practicality purposes
-#echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | passwd vnc                            # Set 'vnc' users passwords for linux user
-#home_directory="/home/vnc"                                                     # Create SSH directory for sudo user
-
-# Configure VNC password manually
-#umask 0077                                                                     # use safe default permissions
-#mkdir -p "home_directory/.vnc"                                                 # create config directory
-#chmod go-rwx "home_directory/.vnc"                                             # enforce safe permissions
-#vncpasswd -f <<<"$AUTOPASSWORD" >"home_directory/.vnc/passwd"                  # generate and write a password
-
-# Start vncserver. Connections are on port 5901.
-# Your second display will be served on port 5902.
-# Running now to auto Initialise some files.
-# sudo -u vnc expect <<EOF                                                       # Use 'expect' to simulate user interaction
-# spawn vncserver
-# expect "Password:"
-# send "$AUTOPASSWORD\r"                                                         # input password randomly generated above
-# expect "Verify:"
-# send "$AUTOPASSWORD\r"
-# expect eof
-# exit
-# EOF
-
-# vncserver -kill :1                                                             # We're stopping here to make changes to systemd.
-
-# mkdir --parents "${home_directory}/.ssh"                                       # Create sudo user ssh key location
-# cp /root/.ssh/authorized_keys "${home_directory}/.ssh"                         # Copy authorized_keys file from root
-# chmod 0700 "${home_directory}/.ssh"                                            # Adjust SSH configuration permissions
-# chmod 0600 "${home_directory}/.ssh/authorized_keys"                            # Adjust SSH configuration permissions
-# chown --recursive "vnc:vnc" "${home_directory}/.ssh"                           # Adjust SSH configuration ownership
-
-# mv "${home_directory}/.vnc/xstartup" "${home_directory}/.vnc/xstartup.bak"     # Before you modify the xstartup file, back up the original
-# rm -f "${home_directory}/.vnc/xstartup"                                        # Remove original
-# echo -e '#!'"/bin/bash\nxrdb $HOME/.Xresources\nstartxfce4 &" >> "${home_directory}/.vnc/xstartup"
-# chmod +x "${home_directory}/.vnc/xstartup"
-
-# cat << EOF > /etc/systemd/system/vncserver@.service
-# [Unit]
-# Description=Start TightVNC server at startup
-# After=syslog.target network.target
-
-# [Service]
-# Type=forking
-# User=vnc
-# Group=vnc
-# WorkingDirectory=/home/vnc
-
-# PIDFile=/home/vnc/.vnc/%H:%i.pid
-# ExecStartPre=-/usr/bin/vncserver -kill :%i > /dev/null 2>&1
-# ExecStart=/usr/bin/vncserver -depth 24 -geometry 1600x900 :%i
-# ExecStop=/usr/bin/vncserver -kill :%i
-
-# [Install]
-# WantedBy=multi-user.target
-# EOF
-
-# # We can now create a unit file for our service.
-# # Unit files are used to describe services and tell the
-# # computer what to do to start/stop or restart the service.
-# systemctl daemon-reload                                                        # Now we can reload systemctl
-# systemctl enable vncserver@1.service                                           # and enable our service
-# vncserver -kill :1                                                             # Stop the current instance of the VNC server if it’s still running
-# systemctl start vncserver@1                                                    # Then start it as you would start any other systemd service
-# # sudo systemctl status vncserver@1                                            # You can verify that it started with this command
-# # u6qXvFpx
-# #---------------------------------------------------------------------------------------------------------------------------------------------------
-# # Connection string from powershell to cloud server: https://www.revsys.com/writings/quicktips/ssh-tunnel.html
-# #    ssh -f vnc@your_server_ip -L 5901:localhost:5901
-# #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-# # Feedback for the user
-# echo "Your VNC and 'vnc' users password are both set to $AUTOPASSWORD - WRITE IT DOWN OR CHANGE THEM NOW!!"
-# echo "As root:"
-# echo "Run 'passwd vnc' to set the users password."
-# echo "Run 'vncpasswd' to set the VNC one."
-echo "Start your SSH tunnel... ssh -f vnc@your_server_ip -L 5901:localhost:5901"
 
 #####################
 ### END OF SCRIPT ###

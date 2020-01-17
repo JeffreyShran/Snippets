@@ -21,7 +21,7 @@
 ### This helps us to keep the script tidy in respect to error handling ###
 # -e exits as soon as any line in the bash script fails.
 # -x prints each command that is going to be executed.
-set -e
+set -x
 
 ### Needs root access to continue ###
 # id -u used as POSIX compliant: https://askubuntu.com/a/30157

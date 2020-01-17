@@ -1,11 +1,13 @@
 #!/bin/bash
 
 ############################################
-### FRESH DEBIAN INSTALL PERSONALISATION ###
-### VERSION 0.1                          ###
+### CLOUD BASED DEBIAN INITIALISATION    ###
+### VERSION: 0.1                         ###
+### TWITTER: @jeffreyshran               ###
+### GITHUB:  github.com/JeffreyShran     ###
 ############################################
 
-### Intial script idea and some techniques taken from:
+### Initial script idea and some techniques taken from:
 ### https://www.digitalocean.com/community/tutorials/automating-initial-server-setup-with-ubuntu-18-04
 ### https://dotnetrussell.com/SetupBare.sh
 ### https://unix.stackexchange.com/a/434061
@@ -16,7 +18,7 @@
 ### -O -  Allows us to output to nowhere and into the bash pipe.
 ### wget -O - https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh | sudo bash
 
-### This helps us to keep the script tidy ###
+### This helps us to keep the script tidy in respect to error handling ###
 # -e exits as soon as any line in the bash script fails.
 # -x prints each command that is going to be executed.
 set -e
@@ -34,10 +36,10 @@ fi
 dpkg-reconfigure debconf --frontend=noninteractive
 
 ### Update, upgrade and clean up ###
-# -qq should imply -y but doesn't work so using -qy here.
+# -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 apt update -qy && apt upgrade -qy && apt autoremove -qy
 
-### Remove ~/.bash_aliases and recreate from GitHub file. These are personalised bash commands. ###
+### Remove ~/.bash_aliases and recreate from GitHub file. These are personalised bash commands and entirely optional. ###
 # -q Quiet.
 # -O Output file.
 rm ~/.bash_aliases
@@ -45,18 +47,18 @@ wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_alia
 
 ### Install core utilities. The for loop will check if the application exists before attempting an install ###
 # Script from - https://unix.stackexchange.com/a/434061
-CORE_PROGRAMS=(git curl sudo)
+CORE_PROGRAMS=(git curl sudo) # Sometimes curl is missing from base installs.
 
 for PROGRAM in "${CORE_PROGRAMS[@]}"; do
     if ! command -v "$CORE_PROGRAMS" > /dev/null 2>&1; then
         apt-get install "$CORE_PROGRAMS" -qy
-        echo "Installed $PROGRAMS"
+        echo "Installed $CORE_PROGRAMS"
     fi
-    echo "$PROGRAMS already installed"
+    echo "$CORE_PROGRAMS already installed"
 done
 
 ### Setup & install golang ###
-# $(..) is command Substitution and is equivalent to `..`. Basically menaing to execute the command within. See "man bash".
+# $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
 ORIGINAL_GO=$(which go)
 rm $ORIGINAL_GO
 cd ~
@@ -83,18 +85,18 @@ done
 # Generate a random password for later
 AUTO_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 # Create new user 'vnc'
-useradd --create-home --shell "/bin/bash" --groups sudo vnc
+useradd --create-home --shell "/bin/bash" --groups sudo vnc # --create-home intentionally used for practicality purposes
 # Set 'vnc'' users password
 echo -e "$AUTO_PASSWORD\n$AUTO_PASSWORD" | passwd vnc
-# Running commands as vnc user: https://www.cyberciti.biz/faq/how-to-run-multiple-commands-in-sudo-under-linux-or-unix/
+# Running next commands as vnc user until 2nd EOF: https://www.cyberciti.biz/faq/how-to-run-multiple-commands-in-sudo-under-linux-or-unix/
 sudo -u vnc -- sh -c <<EOF
 echo -e "$AUTO_PASSWORD\n$AUTO_PASSWORD" | vncpasswd
-# Start vncserver. Connections are on port 5901. Your second display will be served on port 5902. Running now to auto Initialise.
+# Start vncserver. Connections are on port 5901. Your second display will be served on port 5902. Running now to auto Initialise some files.
 vncserver
-# To stop your VNC server on Display 1 - We're stopping here to make changes.
+# To stop your VNC server on Display 1 - We're stopping here to make changes to systemd.
 vncserver -kill :1
-### Creating a systemd Service to Start VNC Server Automatically
-# Our script will help us to modify settings and start/stop VNC Server easily.
+# Creating a systemd Service to Start VNC Server Automatically
+# Our script will help us to modify settings and start/stop VNC Server easily
 echo "[label /usr/local/bin/myvncserver] #!/bin/bash PATH="$PATH:/usr/bin/" DISPLAY="1" DEPTH="16" GEOMETRY="1024x768" OPTIONS="-depth ${DEPTH} -geometry ${GEOMETRY} :${DISPLAY}" case "$1" in start) /usr/bin/vncserver ${OPTIONS} ;; stop) /usr/bin/vncserver -kill :${DISPLAY} ;; restart) $0 stop $0 start ;; esac exit 0" > /usr/local/bin/myvncserver
 # Make our file executable
 chmod +x /usr/local/bin/myvncserver
@@ -122,5 +124,10 @@ EOF
 
 ### FEEDBACK FOR USER ###
 echo "Your VNC and 'vnc' users password are both set to $AUTO_PASSWORD - WRITE IT DOWN OR CHANGE THEM NOW!!"
-echo "Run 'passwd vnc' to set the users password."
-echo "Run 'vncpasswd' to set the VNC one."
+echo "As root:"
+echo "  Run 'passwd vnc' to set the users password."
+echo "  Run 'vncpasswd' to set the VNC one."
+
+#####################
+### END OF SCRIPT ###
+#####################

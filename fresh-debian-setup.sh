@@ -42,7 +42,7 @@ apt update -qy && apt upgrade -qy && apt autoremove -qy
 ### Remove ~/.bash_aliases and recreate from GitHub file. These are personalised bash commands and entirely optional. ###
 # -q Quiet.
 # -O Output file.
-rm ~/.bash_aliases
+rm -f ~/.bash_aliases # -f will ignore nonexistent files, never prompt.
 wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases -O ~/.bash_aliases
 
 ### Install core utilities. The for loop will check if the application exists before attempting an install ###

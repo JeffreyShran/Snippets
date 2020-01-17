@@ -49,7 +49,7 @@ wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_alia
 # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
 pkgs='git curl sudo xfce4 xfce4-goodies gnome-icon-theme tightvncserver iceweasel' # Sometimes curl is missing from base installs.
 if ! dpkg -s $pkgs >/dev/null 2>&1; then
-  sudo apt-get install $pkgs
+  sudo apt-get install -qy $pkgs
 fi
 
 ### Setup & install golang ###

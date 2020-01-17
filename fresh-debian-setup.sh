@@ -68,19 +68,38 @@ echo "Installed golang"
 
 ### Setup VNC ###
 # Generate a random password for later
-AUTO_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+AUTOPASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 # Create new user 'vnc'
 useradd --create-home --shell "/bin/bash" --groups sudo vnc # --create-home intentionally used for practicality purposes
 # Set 'vnc'' users password
-echo -e "$AUTO_PASSWORD\n$AUTO_PASSWORD" | passwd vnc
-# Running next commands as vnc user until 2nd EOF: https://www.cyberciti.biz/faq/how-to-run-multiple-commands-in-sudo-under-linux-or-unix/
-sudo -u vnc -- sh -c <<EOF
-echo -e "$AUTO_PASSWORD\n$AUTO_PASSWORD" | vncpasswd
+echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | passwd vnc
+# Running next commands as vnc user until 2nd EOVNC: https://www.cyberciti.biz/faq/how-to-run-multiple-commands-in-sudo-under-linux-or-unix/
+sudo -u vnc -- sh -c <<EOVNC
+echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | vncpasswd
 # Start vncserver. Connections are on port 5901. Your second display will be served on port 5902. Running now to auto Initialise some files.
 vncserver
 # To stop your VNC server on Display 1 - We're stopping here to make changes to systemd.
 vncserver -kill :1
 # Creating a systemd Service to Start VNC Server Automatically
+# Create SSH directory for sudo user
+home_directory="$(eval echo ~vnc)"
+mkdir --parents "${home_directory}/.ssh"
+# Copy `authorized_keys` file from root
+cp /root/.ssh/authorized_keys "${home_directory}/.ssh"
+# Adjust SSH configuration ownership and permissions
+chmod 0700 "${home_directory}/.ssh"
+chmod 0600 "${home_directory}/.ssh/authorized_keys"
+chown --recursive "vnc:vnc" "${home_directory}/.ssh"
+#
+## Disable root SSH login with password. TODO: Needed?
+##   sed --in-place 's/^PermitRootLogin.*/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
+##   f sshd -t -q; then
+##       systemctl restart sshd
+##   fi
+#
+# Add exception for SSH and then enable UFW firewall
+ufw allow OpenSSH
+ufw --force enable
 # Our script will help us to modify settings and start/stop VNC Server easily
 echo "[label /usr/local/bin/myvncserver] #!/bin/bash PATH="$PATH:/usr/bin/" DISPLAY="1" DEPTH="16" GEOMETRY="1024x768" OPTIONS="-depth ${DEPTH} -geometry ${GEOMETRY} :${DISPLAY}" case "$1" in start) /usr/bin/vncserver ${OPTIONS} ;; stop) /usr/bin/vncserver -kill :${DISPLAY} ;; restart) $0 stop $0 start ;; esac exit 0" > /usr/local/bin/myvncserver
 # Make our file executable
@@ -102,16 +121,16 @@ systemctl enable myvncserver.service
 #   sudo systemctl stop myvncserver.service
 #   sudo systemctl restart myvncserver.service
 #
-EOF
+EOVNC
 
 ### Connection string from powershell to cloud server: https://www.revsys.com/writings/quicktips/ssh-tunnel.html
-# ssh -f user@personal-server.com -L 2000:personal-server.com:25 -N
+# ssh -f vnc@your_server_ip -L 5901:localhost:5901
 
 ### FEEDBACK FOR USER ###
-echo "Your VNC and 'vnc' users password are both set to $AUTO_PASSWORD - WRITE IT DOWN OR CHANGE THEM NOW!!"
+echo "Your VNC and 'vnc' users password are both set to $AUTOPASSWORD - WRITE IT DOWN OR CHANGE THEM NOW!!"
 echo "As root:"
-echo "  Run 'passwd vnc' to set the users password."
-echo "  Run 'vncpasswd' to set the VNC one."
+echo "Run 'passwd vnc' to set the users password."
+echo "Run 'vncpasswd' to set the VNC one."
 
 #####################
 ### END OF SCRIPT ###

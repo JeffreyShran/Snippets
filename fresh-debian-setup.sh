@@ -48,6 +48,7 @@ wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_alia
 ### Install core utilities. dpkg will check if the application exists before attempting an install ###
 # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
 pkgs='git curl sudo xfce4 xfce4-goodies gnome-icon-theme tightvncserver iceweasel' # Sometimes curl is missing from base installs.
+# TODO: One of these pkgs asks us to set the keyboard language.
 if ! dpkg -s $pkgs >/dev/null 2>&1; then
   sudo apt-get install -qy $pkgs
 fi
@@ -56,7 +57,7 @@ fi
 # Theres no up to date golang package in debian
 # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
 # remove  current golang if exists
-if ! [ $(which go) = "" ] > /dev/null 2>&1; then
+if ! [[ $(which go) ]]; then
    rm $(which go)
 fi
 cd ~
@@ -73,10 +74,8 @@ echo "Installed golang"
 AUTOPASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 # Create new user 'vnc'
 useradd --create-home --shell "/bin/bash" --groups sudo vnc # --create-home intentionally used for practicality purposes
-# Set 'vnc'' users password
+# Set 'vnc'' users passwords for linux user and VNC.
 echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | passwd vnc
-# Running next commands as vnc user until 2nd EOVNC: https://www.cyberciti.biz/faq/how-to-run-multiple-commands-in-sudo-under-linux-or-unix/
-sudo -u vnc -- sh -c <<EOVNC
 echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | vncpasswd
 # Start vncserver. Connections are on port 5901. Your second display will be served on port 5902. Running now to auto Initialise some files.
 vncserver
@@ -123,7 +122,6 @@ systemctl enable myvncserver.service
 #   sudo systemctl stop myvncserver.service
 #   sudo systemctl restart myvncserver.service
 #
-EOVNC
 
 ### Connection string from powershell to cloud server: https://www.revsys.com/writings/quicktips/ssh-tunnel.html
 # ssh -f vnc@your_server_ip -L 5901:localhost:5901

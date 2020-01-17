@@ -26,7 +26,7 @@
 set -x
 
 # Needs root access to continue
-if ! [ $(id -u) = 0 ] > /dev/null 2>&1; then                                  # id -u used as POSIX compliant: https://askubuntu.com/a/30157
+if ! [ $(id -u) = 0 ] > /dev/null 2>&1; then                                   # id -u used as POSIX compliant: https://askubuntu.com/a/30157
    echo "This script needs to be ran as interactive root. Switch to 'sudo -i' and try again."
    exit 1
 fi
@@ -40,23 +40,23 @@ fi
 dpkg-reconfigure debconf --frontend=noninteractive
 
 # Update, upgrade and clean up
-apt update -qy && apt upgrade -qy && apt autoremove -qy                       # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
+apt update -qy && apt upgrade -qy && apt autoremove -qy                        # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 
 # Remove ~/.bash_aliases and recreate from GitHub file.
 # These are personalised bash commands and entirely optional
-rm -f ~/.bash_aliases                                                         # -f will ignore nonexistent files, never prompt.
+rm -f ~/.bash_aliases                                                          # -f will ignore nonexistent files, never prompt.
 wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases -O ~/.bash_aliases # -q Quiet -O Output file.
 
 # Install core utilities.
 # dpkg will check if the application exists before attempting an install
-pkgs='git curl sudo xfce4 xfce4-goodies gnome-icon-theme tightvncserver iceweasel' # Sometimes curl is missing from base installs.
-if ! dpkg -s $pkgs >/dev/null 2>&1; then                                      # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
-  sudo apt-get install -qy $pkgs                                              # TODO: One of these pkgs asks us to set the keyboard language.
+pkgs='git curl sudo xfce4 xfce4-goodies tightvncserver iceweasel' # Sometimes curl is missing from base installs.
+if ! dpkg -s $pkgs >/dev/null 2>&1; then                                       # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
+  sudo apt-get install -qy $pkgs                                               # TODO: One of these pkgs asks us to set the keyboard language.
 fi
 
 # Setup & install golang
-if ! [[ $(which go) ]]; then                                                  # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
-   rm $(which go)                                                             # remove  current golang if exists
+if [[ $(which go) ]]; then                                                     # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
+   rm -f $(which go)                                                           # remove current golang if exists. -f will ignore nonexistent files, never prompt.
 fi
 cd ~
 VERSION=$(curl https://golang.org/VERSION?m=text)                              # Returns in form of "go1.13.5"
@@ -67,21 +67,21 @@ echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source
 rm $VERSION.linux-amd64.tar.gz
 
 # Setup VNC
-AUTOPASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) # Generate a random password for later
+AUTOPASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)  # Generate a random password for later
 useradd --create-home --shell "/bin/bash" --groups sudo vnc                    # Create new user 'vnc'--create-home intentionally used for practicality purposes
 echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | passwd vnc                            # Set 'vnc'' users passwords for linux user
 home_directory="/home/vnc"                                                     # Create SSH directory for sudo user
 
 # Configure VNC password
 umask 0077                                                                     # use safe default permissions
-mkdir -p "$HOME/.vnc"                                                          # create config directory
-chmod go-rwx "$HOME/.vnc"                                                      # enforce safe permissions
-vncpasswd -f <<<"$AUTOPASSWORD" >"$HOME/.vnc/passwd"                           # generate and write a password
+mkdir -p "home_directory/.vnc"                                                          # create config directory
+chmod go-rwx "home_directory/.vnc"                                                      # enforce safe permissions
+vncpasswd -f <<<"$AUTOPASSWORD" >"home_directory/.vnc/passwd"                           # generate and write a password
 
 # Start vncserver. Connections are on port 5901.
 # Your second display will be served on port 5902.
 # Running now to auto Initialise some files.
-vncserver
+sudo -u vnc vncserver
 # To stop your VNC server on Display 1.
 # We're stopping here to make changes to systemd.
 vncserver -kill :1
@@ -92,8 +92,14 @@ chmod 0700 "${home_directory}/.ssh"                                            #
 chmod 0600 "${home_directory}/.ssh/authorized_keys"                            # Adjust SSH configuration permissions
 chown --recursive "vnc:vnc" "${home_directory}/.ssh"                           # Adjust SSH configuration ownership
 # Configure Universal Firewall
-ufw allow OpenSSH                                                              # Add firewall exception for SSH
-ufw --force enable                                                             # Enable UFW firewall
+#ufw allow OpenSSH                                                             # Add firewall exception for SSH
+#ufw --force enable   
+
+mv "${home_directory}/.vnc/xstartup" "${home_directory}/.vnc/xstartup.bak"     # Before you modify the xstartup file, back up the original
+rm -f "${home_directory}/.vnc/xstartup"                                        # Remove original
+echo -e '#!'"/bin/bash\nxrdb $HOME/.Xresources\nstartxfce4 &" >> "${home_directory}/.vnc/xstartup"
+chmod +x "${home_directory}/.vnc/xstartup"
+sudo -u vnc vncserver
 
 # Our script will help us to modify settings and start/stop VNC Server easily
 echo "[label /usr/local/bin/myvncserver] #!/bin/bash PATH="$PATH:/usr/bin/" DISPLAY="1" DEPTH="16" GEOMETRY="1024x768" OPTIONS="-depth ${DEPTH} -geometry ${GEOMETRY} :${DISPLAY}" case "$1" in start) /usr/bin/vncserver ${OPTIONS} ;; stop) /usr/bin/vncserver -kill :${DISPLAY} ;; restart) $0 stop $0 start ;; esac exit 0" > /usr/local/bin/myvncserver

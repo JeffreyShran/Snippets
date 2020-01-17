@@ -103,7 +103,6 @@ mv "${home_directory}/.vnc/xstartup" "${home_directory}/.vnc/xstartup.bak"     #
 rm -f "${home_directory}/.vnc/xstartup"                                        # Remove original
 echo -e '#!'"/bin/bash\nxrdb $HOME/.Xresources\nstartxfce4 &" >> "${home_directory}/.vnc/xstartup"
 chmod +x "${home_directory}/.vnc/xstartup"
-sudo -u vnc vncserver
 
 cat << EOF > /etc/systemd/system/vncserver@.service
 [Unit]
@@ -133,13 +132,8 @@ systemctl enable vncserver@1.service                                           #
 vncserver -kill :1                                                             # Stop the current instance of the VNC server if it’s still running
 systemctl start vncserver@1                                                    # Then start it as you would start any other systemd service
 # sudo systemctl status vncserver@1                                            # You can verify that it started with this command
-
+# lDyzUATu
 #---------------------------------------------------------------------------------------------------------------------------------------------------
-# You've enabled your new service now. Use these commands to start, stop or restart the service using the systemctl command
-#   sudo systemctl start myvncserver.service
-#   sudo systemctl stop myvncserver.service
-#   sudo systemctl restart myvncserver.service
-#
 # Connection string from powershell to cloud server: https://www.revsys.com/writings/quicktips/ssh-tunnel.html
 #    ssh -f vnc@your_server_ip -L 5901:localhost:5901
 #-----------------------------------------------------------------------------------------------------------------------------------------------------

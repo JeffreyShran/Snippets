@@ -45,19 +45,15 @@ apt update -qy && apt upgrade -qy && apt autoremove -qy
 rm -f ~/.bash_aliases # -f will ignore nonexistent files, never prompt.
 wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases -O ~/.bash_aliases
 
-### Install core utilities. The for loop will check if the application exists before attempting an install ###
-# Script from - https://unix.stackexchange.com/a/434061
-CORE_PROGRAMS=(git curl sudo) # Sometimes curl is missing from base installs.
-
-for PROGRAM in "${CORE_PROGRAMS[@]}"; do
-    if ! command -v "$CORE_PROGRAMS" > /dev/null 2>&1; then
-        apt-get install "$CORE_PROGRAMS" -qy
-        echo "Installed $CORE_PROGRAMS"
-    fi
-    echo "$CORE_PROGRAMS already installed"
-done
+### Install core utilities. dpkg will check if the application exists before attempting an install ###
+# Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
+pkgs='git curl sudo xfce4 xfce4-goodies gnome-icon-theme tightvncserver iceweasel' # Sometimes curl is missing from base installs.
+if ! dpkg -s $pkgs >/dev/null 2>&1; then
+  sudo apt-get install $pkgs
+fi
 
 ### Setup & install golang ###
+# Theres no up to date golang package in debian
 # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
 ORIGINAL_GO=$(which go)
 rm $ORIGINAL_GO
@@ -69,17 +65,6 @@ echo "export GOPATH=~/go" >> ~/.profile # source intentionally not used here as 
 echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source ~/.profile
 rm $VERSION.linux-amd64.tar.gz
 echo "Installed golang"
-
-### Install everything else. The for loop will check if the application exists before attempting an install ###
-PROGRAMS=(xfce4 xfce4-goodies gnome-icon-theme tightvncserver iceweasel)
-
-for PROGRAM in "${PROGRAMS[@]}"; do
-    if ! command -v "$PROGRAMS" > /dev/null 2>&1; then
-        apt-get install "$PROGRAMS" -qy
-        echo "Installed $PROGRAMS"
-    fi
-    echo "$PROGRAMS already installed"
-done
 
 ### Setup VNC ###
 # Generate a random password for later

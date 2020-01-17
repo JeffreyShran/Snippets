@@ -81,7 +81,10 @@ vncpasswd -f <<<"$AUTOPASSWORD" >"home_directory/.vnc/passwd"                   
 # Start vncserver. Connections are on port 5901.
 # Your second display will be served on port 5902.
 # Running now to auto Initialise some files.
-sudo -u vnc vncserver
+sudo -u vnc vncserver << EOF
+$AUTOPASSWORD
+$AUTOPASSWORD
+EOF
 # To stop your VNC server on Display 1.
 # We're stopping here to make changes to systemd.
 vncserver -kill :1

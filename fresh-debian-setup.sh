@@ -55,8 +55,10 @@ fi
 ### Setup & install golang ###
 # Theres no up to date golang package in debian
 # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
-ORIGINAL_GO=$(which go)
-rm $ORIGINAL_GO
+# remove  current golang if exists
+if ! [ $(which go) = "" ] > /dev/null 2>&1; then
+   rm $(which go)
+fi
 cd ~
 VERSION=$(curl https://golang.org/VERSION?m=text) # Returns in form of "go1.13.5"
 wget https://dl.google.com/go/$VERSION.linux-amd64.tar.gz
@@ -82,9 +84,9 @@ vncserver
 vncserver -kill :1
 # Creating a systemd Service to Start VNC Server Automatically
 # Create SSH directory for sudo user
-home_directory="$(eval echo ~vnc)"
+home_directory="/home/vnc"
 mkdir --parents "${home_directory}/.ssh"
-# Copy `authorized_keys` file from root
+# Copy authorized_keys file from root
 cp /root/.ssh/authorized_keys "${home_directory}/.ssh"
 # Adjust SSH configuration ownership and permissions
 chmod 0700 "${home_directory}/.ssh"

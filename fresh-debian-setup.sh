@@ -49,7 +49,7 @@ wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_alia
 
 # Install core utilities.
 # dpkg will check if the application exists before attempting an install
-pkgs='git curl sudo xfce4 xfce4-goodies tightvncserver iceweasel' # Sometimes curl is missing from base installs.
+pkgs='expect git curl sudo xfce4 xfce4-goodies tightvncserver iceweasel' # Sometimes curl is missing from base installs.
 if ! dpkg -s $pkgs >/dev/null 2>&1; then                                       # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
   sudo apt-get install -qy $pkgs                                               # TODO: One of these pkgs asks us to set the keyboard language.
 fi
@@ -69,31 +69,35 @@ rm $VERSION.linux-amd64.tar.gz
 # Setup VNC
 AUTOPASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)  # Generate a random password for later
 useradd --create-home --shell "/bin/bash" --groups sudo vnc                    # Create new user 'vnc'--create-home intentionally used for practicality purposes
-echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | passwd vnc                            # Set 'vnc'' users passwords for linux user
+echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | passwd vnc                            # Set 'vnc' users passwords for linux user
 home_directory="/home/vnc"                                                     # Create SSH directory for sudo user
 
-# Configure VNC password
-umask 0077                                                                     # use safe default permissions
-mkdir -p "home_directory/.vnc"                                                          # create config directory
-chmod go-rwx "home_directory/.vnc"                                                      # enforce safe permissions
-vncpasswd -f <<<"$AUTOPASSWORD" >"home_directory/.vnc/passwd"                           # generate and write a password
+# Configure VNC password manually
+#umask 0077                                                                     # use safe default permissions
+#mkdir -p "home_directory/.vnc"                                                 # create config directory
+#chmod go-rwx "home_directory/.vnc"                                             # enforce safe permissions
+#vncpasswd -f <<<"$AUTOPASSWORD" >"home_directory/.vnc/passwd"                  # generate and write a password
 
 # Start vncserver. Connections are on port 5901.
 # Your second display will be served on port 5902.
 # Running now to auto Initialise some files.
-echo -e "$AUTOPASSWORD\n$AUTOPASSWORD" | sudo -u vnc vncserver
-# To stop your VNC server on Display 1.
-# We're stopping here to make changes to systemd.
-vncserver -kill :1
-# Creating a systemd Service to Start VNC Server Automatically
+sudo -u vnc expect <<EOF                                                       # Use 'expect' to simulate user interaction
+spawn vncserver
+expect "Password:"
+send "$AUTOPASSWORD\r"                                                         # input password randomly generated above
+expect "Verify:"
+send "$AUTOPASSWORD\r"
+expect eof
+exit
+EOF
+
+vncserver -kill :1                                                             # We're stopping here to make changes to systemd.
+
 mkdir --parents "${home_directory}/.ssh"                                       # Create sudo user ssh key location
 cp /root/.ssh/authorized_keys "${home_directory}/.ssh"                         # Copy authorized_keys file from root
 chmod 0700 "${home_directory}/.ssh"                                            # Adjust SSH configuration permissions
 chmod 0600 "${home_directory}/.ssh/authorized_keys"                            # Adjust SSH configuration permissions
 chown --recursive "vnc:vnc" "${home_directory}/.ssh"                           # Adjust SSH configuration ownership
-# Configure Universal Firewall
-#ufw allow OpenSSH                                                             # Add firewall exception for SSH
-#ufw --force enable   
 
 mv "${home_directory}/.vnc/xstartup" "${home_directory}/.vnc/xstartup.bak"     # Before you modify the xstartup file, back up the original
 rm -f "${home_directory}/.vnc/xstartup"                                        # Remove original
@@ -101,16 +105,34 @@ echo -e '#!'"/bin/bash\nxrdb $HOME/.Xresources\nstartxfce4 &" >> "${home_directo
 chmod +x "${home_directory}/.vnc/xstartup"
 sudo -u vnc vncserver
 
-# Our script will help us to modify settings and start/stop VNC Server easily
-echo "[label /usr/local/bin/myvncserver] #!/bin/bash PATH="$PATH:/usr/bin/" DISPLAY="1" DEPTH="16" GEOMETRY="1024x768" OPTIONS="-depth ${DEPTH} -geometry ${GEOMETRY} :${DISPLAY}" case "$1" in start) /usr/bin/vncserver ${OPTIONS} ;; stop) /usr/bin/vncserver -kill :${DISPLAY} ;; restart) $0 stop $0 start ;; esac exit 0" > /usr/local/bin/myvncserver
-chmod +x /usr/local/bin/myvncserver                                            # Make our file executable
+cat << EOF > /etc/systemd/system/vncserver@.service
+[Unit]
+Description=Start TightVNC server at startup
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=vnc
+Group=vnc
+WorkingDirectory=/home/vnc
+
+PIDFile=/home/vnc/.vnc/%H:%i.pid
+ExecStartPre=-/usr/bin/vncserver -kill :%i > /dev/null 2>&1
+ExecStart=/usr/bin/vncserver -depth 24 -geometry 1600x900 :%i
+ExecStop=/usr/bin/vncserver -kill :%i
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
 # We can now create a unit file for our service.
 # Unit files are used to describe services and tell the
 # computer what to do to start/stop or restart the service.
-echo "[label /lib/systemd/system/myvncserver.service] [Unit] Description=Manage VNC Server on this droplet [Service] Type=forking ExecStart=/usr/local/bin/myvncserver start ExecStop=/usr/local/bin/myvncserver stop ExecReload=/usr/local/bin/myvncserver restart User=vnc [Install] WantedBy=multi-user.target" > /lib/systemd/system/myvncserver.service
 systemctl daemon-reload                                                        # Now we can reload systemctl
-systemctl enable myvncserver.service                                           # and enable our service
+systemctl enable vncserver@1.service                                           # and enable our service
+vncserver -kill :1                                                             # Stop the current instance of the VNC server if it’s still running
+systemctl start vncserver@1                                                    # Then start it as you would start any other systemd service
+# sudo systemctl status vncserver@1                                            # You can verify that it started with this command
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 # You've enabled your new service now. Use these commands to start, stop or restart the service using the systemctl command
@@ -127,6 +149,7 @@ echo "Your VNC and 'vnc' users password are both set to $AUTOPASSWORD - WRITE IT
 echo "As root:"
 echo "Run 'passwd vnc' to set the users password."
 echo "Run 'vncpasswd' to set the VNC one."
+echo "Start your SSH tunnel... ssh -f vnc@your_server_ip -L 5901:localhost:5901"
 
 #####################
 ### END OF SCRIPT ###

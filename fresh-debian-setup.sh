@@ -51,7 +51,7 @@ pkgs='
 x2goserver
 x2goserver-xsession
 git
-curl # Sometimes curl is missing from base installs.
+curl
 sudo
 xfce4
 xfce4-goodies

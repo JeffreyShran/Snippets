@@ -46,23 +46,37 @@ wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_alia
 
 # Install core utilities.
 # dpkg will check if the application exists before attempting an install
-pkgs='x2goserver x2goserver-xsession git curl sudo xfce4 xfce4-goodies tightvncserver iceweasel' # Sometimes curl is missing from base installs.
+pkgs='
+x2goserver
+x2goserver-xsession
+git
+curl                                                                            # Sometimes curl is missing from base installs.
+sudo
+xfce4
+xfce4-goodies
+tightvncserver
+iceweasel
+'
 if ! dpkg -s $pkgs >/dev/null 2>&1; then                                       # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
-  sudo apt-get install -qy $pkgs                                               # TODO: One of these pkgs asks us to set the keyboard language.
+  sudo apt-get install -qy $pkgs                                               # TODO: Why does one of these pkgs (xfce?) asks us to set the keyboard language. How to stop it?
 fi
 
 # Setup & install golang
-if [[ $(which go) ]]; then                                                     # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
-   rm -f $(which go)                                                           # remove current golang if exists. -f will ignore nonexistent files, never prompt.
-fi
-cd ~
-VERSION=$(curl https://golang.org/VERSION?m=text)                              # Returns in form of "go1.13.5"
-wget https://dl.google.com/go/$VERSION.linux-amd64.tar.gz
-tar -C /usr/local -xzf $VERSION.linux-amd64.tar.gz
-echo "export GOPATH=~/go" >> ~/.profile                                        # source intentionally not used here as it appears on next line.
-echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source ~/.profile
-rm $VERSION.linux-amd64.tar.gz
+function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; } # https://apple.stackexchange.com/a/123408
 
+if [[ $(which go) ]]; then                                                      # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
+    INSTALLEDVERSION=`go version | { read _ _ v _; echo ${v#go}; }`             # Returns in form of "1.13.5"
+    AVAILABLEVERSION=$(curl -s https://golang.org/VERSION?m=text)               # Returns in form of "go1.13.5"
+    if [ $(version $INSTALLEDVERSION | cut -c 3-) -lt $(version $AVAILABLEVERSION) ]; then  # Comparison Operators - http://tldp.org/LDP/abs/html/comparison-ops.html also pipe to cut and remove leading 2 characters
+        rm -f $(which go)                                                           # remove current golang if exists. -f will ignore nonexistent files, never prompt.
+        cd ~
+        wget https://dl.google.com/go/$VERSION.linux-amd64.tar.gz
+        tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
+        echo "export GOPATH=~/go" >> ~/.profile                                        # source intentionally not used here as it appears on next line.
+        echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source ~/.profile
+        rm $AVAILABLEVERSION.linux-amd64.tar.gz
+    fi
+fi
 #####################
 ### END OF SCRIPT ###
 #####################

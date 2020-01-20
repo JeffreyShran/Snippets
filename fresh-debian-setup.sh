@@ -79,7 +79,7 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 
-if [[ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]]; then # ttps://stackoverflow.com/a/35165216/4373967
+if [ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]; then # https://stackoverflow.com/a/35165216/4373967
   echo "Found golang installation"
   INSTALLEDVERSION=$(go version | {
     read _ _ v _

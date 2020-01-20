@@ -94,7 +94,8 @@ if [[ $(which go) ]]; then # $(..) is command Substitution and is equivalent to 
     echo "Currently installed golang v$INSTALLEDVERSION is already latest version"
   fi
 else
-  installGoFromTheGOOG # Install from source as no current version exists
+  echo "Installing golang from source as no current version exists"
+  installGoFromTheGOOG
 fi
 cat <<"EOF"
                 ___

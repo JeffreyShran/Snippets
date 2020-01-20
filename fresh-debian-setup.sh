@@ -13,7 +13,8 @@
 #    https://dotnetrussell.com/SetupBare.sh
 #    https://unix.stackexchange.com/a/434061
 #
-# To execute the script, run the below command. Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe.
+# To execute the script, run the below command. 
+# Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe.
 #    wget -O - https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh | sudo bash
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -23,25 +24,25 @@
 set -x
 
 # Needs root access to continue
-if ! [ $(id -u) = 0 ] > /dev/null 2>&1; then                                   # id -u used as POSIX compliant: https://askubuntu.com/a/30157
-   echo "This script needs to be ran as interactive root. Switch to 'sudo -i' and try again."
-   exit 1
+if ! [ $(id -u) = 0 ] >/dev/null 2>&1; then # id -u used as POSIX compliant: https://askubuntu.com/a/30157
+  echo "This script needs to be ran as interactive root. Switch to 'sudo -i' and try again."
+  exit 1
 fi
 
 # Change the frontend default behaviour of debconf to noninteractive
 # This helps to make the installs and updates etc non-interactive.
 # (i.e You don't get asked questions)
-# Otherwise you have to run something like this each time as the 
+# Otherwise you have to run something like this each time as the
 # noninteractive will not persist:
 #     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn.
 dpkg-reconfigure debconf --frontend=noninteractive
 
 # Update, upgrade and clean up
-apt update -qy && apt upgrade -qy && apt autoremove -qy                        # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
+apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 
 # Remove ~/.bash_aliases and recreate from GitHub file.
 # These are personalised bash commands and entirely optional
-rm -f ~/.bash_aliases                                                          # -f will ignore nonexistent files, never prompt.
+rm -f ~/.bash_aliases # -f will ignore nonexistent files, never prompt.
 wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases -O ~/.bash_aliases # -q Quiet -O Output file.
 
 # Install core utilities.
@@ -50,32 +51,35 @@ pkgs='
 x2goserver
 x2goserver-xsession
 git
-curl                                                                            # Sometimes curl is missing from base installs.
+curl # Sometimes curl is missing from base installs.
 sudo
 xfce4
 xfce4-goodies
 tightvncserver
 iceweasel
 '
-if ! dpkg -s $pkgs >/dev/null 2>&1; then                                       # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
-  sudo apt-get install -qy $pkgs                                               # TODO: Why does one of these pkgs (xfce?) asks us to set the keyboard language. How to stop it?
+if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
+  sudo apt-get install -qy $pkgs # TODO: Why does one of these pkgs (xfce?) asks us to set the keyboard language. How to stop it?
 fi
 
 # Setup & install golang
-function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; } # https://apple.stackexchange.com/a/123408
+function version() { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; } # https://apple.stackexchange.com/a/123408
 
-if [[ $(which go) ]]; then                                                      # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
-    INSTALLEDVERSION=`go version | { read _ _ v _; echo ${v#go}; }`             # Returns in form of "1.13.5"
-    AVAILABLEVERSION=$(curl -s https://golang.org/VERSION?m=text)               # Returns in form of "go1.13.5"
-    if [ $(version $INSTALLEDVERSION | cut -c 3-) -lt $(version $AVAILABLEVERSION) ]; then  # Comparison Operators - http://tldp.org/LDP/abs/html/comparison-ops.html also pipe to cut and remove leading 2 characters
-        rm -f $(which go)                                                           # remove current golang if exists. -f will ignore nonexistent files, never prompt.
-        cd ~
-        wget https://dl.google.com/go/$VERSION.linux-amd64.tar.gz
-        tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
-        echo "export GOPATH=~/go" >> ~/.profile                                        # source intentionally not used here as it appears on next line.
-        echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >> ~/.profile && source ~/.profile
-        rm $AVAILABLEVERSION.linux-amd64.tar.gz
-    fi
+if [[ $(which go) ]]; then # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash".
+  INSTALLEDVERSION=$(go version | {
+    read _ _ v _
+    echo ${v#go}
+  }) # Returns in form of "1.13.5"
+  AVAILABLEVERSION=$(curl -s https://golang.org/VERSION?m=text) # Returns in form of "go1.13.5"
+  if [ $(version $INSTALLEDVERSION | cut -c 3-) -lt $(version $AVAILABLEVERSION) ]; then # Comparison Operators - http://tldp.org/LDP/abs/html/comparison-ops.html also pipe to cut and remove leading 2 characters
+    rm -f $(which go) # remove current golang if exists. -f will ignore nonexistent files, never prompt.
+    cd ~
+    wget https://dl.google.com/go/$VERSION.linux-amd64.tar.gz
+    tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
+    echo "export GOPATH=~/go" >>~/.profile # source intentionally not used here as it appears on next line.
+    echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >>~/.profile && source ~/.profile
+    rm $AVAILABLEVERSION.linux-amd64.tar.gz
+  fi
 fi
 #####################
 ### END OF SCRIPT ###

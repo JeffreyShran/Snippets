@@ -85,18 +85,19 @@ if [ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]; then # https://s
     read _ _ v _
     echo ${v#go}
   }) # Strips out the response and returns in the form of "1.13.5"
-
-  if [ $(version $INSTALLEDVERSION | cut -c 3-) -lt $(version $AVAILABLEVERSION) ]; then # Comparison Operators - http://tldp.org/LDP/abs/html/comparison-ops.html also pipe to cut and remove leading 2 characters
-    echo "Current go version is older than the one available from Google"
-    rm -f $(which go)    # remove current golang if exists. -f will ignore nonexistent files, never prompt
-    installGoFromTheGOOG # Update to latest verion
-  else
-    echo "Currently installed golang v$INSTALLEDVERSION is already latest version"
-  fi
 else
   echo "Installing golang from source as no current version exists"
   installGoFromTheGOOG
 fi
+
+#if [ $(version $INSTALLEDVERSION | cut -c 3-) -lt $(version $AVAILABLEVERSION) ]; then # Comparison Operators - http://tldp.org/LDP/abs/html/comparison-ops.html also pipe to cut and remove leading 2 characters
+#  echo "Current go version is older than the one available from Google"
+#  rm -f $(which go)    # remove current golang if exists. -f will ignore nonexistent files, never prompt
+#  installGoFromTheGOOG # Update to latest verion
+#else
+#  echo "Currently installed golang v$INSTALLEDVERSION is already latest version"
+#fi
+
 cat <<"EOF"
                 ___
             ,-'"   "`-.

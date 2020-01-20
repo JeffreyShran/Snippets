@@ -14,8 +14,8 @@
 #    https://unix.stackexchange.com/a/434061
 #
 # To execute the script, run the below command.
-# Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching
-#    wget --no-cache --no-cookies -O - https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh | sudo bash
+# Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.
+#    wget -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | sudo bash
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
 # This helps us to keep the script tidy in respect to error handling
@@ -79,7 +79,7 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 
-if [[ $(which go) ]]; then # $(..) is command Substitution and is equivalent to `..`. Basically meaning to execute the command within. See "man bash"
+if [[ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]]; then # ttps://stackoverflow.com/a/35165216/4373967
   echo "Found golang installation"
   INSTALLEDVERSION=$(go version | {
     read _ _ v _

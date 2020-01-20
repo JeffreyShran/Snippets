@@ -70,16 +70,7 @@ function version() { # https://apple.stackexchange.com/a/123408 - You need to de
 
 AVAILABLEVERSION=$(curl -s https://golang.org/VERSION?m=text) # Returns in form of "go1.13.5"
 
-function installGoFromTheGOOG() { # Pulls down latest golang direct from Google and sets PATH / GOPATH
-  cd ~
-  wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
-  tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
-  echo "export GOPATH=~/go" >>~/.profile # source intentionally not used here as it appears on next line
-  echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >>~/.profile && source ~/.profile
-  rm $AVAILABLEVERSION.linux-amd64.tar.gz
-}
-
-if [ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]; then # https://stackoverflow.com/a/35165216/4373967
+if [[ $(which go) ]]; then # https://stackoverflow.com/a/35165216/4373967
   echo "Found golang installation"
   INSTALLEDVERSION=$(go version | {
     read _ _ v _
@@ -87,7 +78,13 @@ if [ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]; then # https://s
   }) # Strips out the response and returns in the form of "1.13.5"
 else
   echo "Installing golang from source as no current version exists"
-  installGoFromTheGOOG
+  # Pulls down latest golang direct from Google and sets PATH / GOPATH
+  cd ~
+  wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
+  tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
+  echo "export GOPATH=~/go" >>~/.profile # source intentionally not used here as it appears on next line
+  echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >>~/.profile && source ~/.profile
+  rm $AVAILABLEVERSION.linux-amd64.tar.gz
 fi
 
 #if [ $(version $INSTALLEDVERSION | cut -c 3-) -lt $(version $AVAILABLEVERSION) ]; then # Comparison Operators - http://tldp.org/LDP/abs/html/comparison-ops.html also pipe to cut and remove leading 2 characters

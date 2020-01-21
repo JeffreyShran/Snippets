@@ -37,6 +37,14 @@ fi
 #     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn
 dpkg-reconfigure debconf --frontend=noninteractive
 
+# Setup Kali repositories, mainly for burp.
+wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
+echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
+echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
+
+# Create directory structure
+mkdir -p ~/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
+
 # Update, upgrade and clean up
 apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 
@@ -57,13 +65,15 @@ xfce4
 xfce4-goodies
 tightvncserver
 iceweasel
+openjdk-8-jre
+burpsuite
 '
 if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
   sudo apt-get install -qy $pkgs         # TODO: Why does one of these pkgs (xfce?) ask us to set the keyboard language. How to stop it?
 fi
 
 # Setup & install golang
-
+# Debian sources are out of date so we need to sort it out manually
 function version() { # https://apple.stackexchange.com/a/123408 - You need to define functions in advance of you calling them in your script
   echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'
 }
@@ -74,13 +84,14 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   cd ~
   wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
   tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
-  echo "export GOPATH=~/go" >>~/.profile # source intentionally not used here as it appears on next line
+  echo "export GOPATH=~/hack_the_planet/scripts/go" >>~/.profile # source intentionally not used here as it appears on next line
   echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >>~/.profile && source ~/.profile
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 
 if [[ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]]; then # https://stackoverflow.com/a/35165216/4373967
   echo "Found golang installation"
+
   INSTALLEDVERSION=$(go version | {
     read _ _ v _
     echo ${v#go}
@@ -93,10 +104,22 @@ if [[ $(which go | tr -d ' \n\r\t ' | head -c1 | wc -c) -ne 0 ]]; then # https:/
   else
     echo "Currently installed golang v$INSTALLEDVERSION is already latest version"
   fi
+
 else
   echo "Installing golang from source as no current version exists"
   installGoFromTheGOOG
 fi
+
+# Clone some wordlists
+git clone https://github.com/danielmiessler/SecLists.git ~/hack_the_planet/wordlists
+
+# Install tools
+go get -u github.com/tomnomnom/assetfinder
+go get -u github.com/tomnomnom/httprobe
+go get -u github.com/tomnomnom/meg
+go get github.com/tomnomnom/waybackurls
+
+
 cat <<"EOF"
                 ___
             ,-'"   "`-.

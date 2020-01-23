@@ -45,6 +45,18 @@ echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" >> /
 # Create directory structure
 mkdir -p ~/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
 
+# Setup requirements for Docker
+apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg2 \
+    software-properties-common
+# Add Docker repository
+apt-get remove docker docker-engine docker.io containerd runc # Older versions of Docker were called docker, docker.io, or docker-engine. If these are installed, uninstall them
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add - # Add Docker’s official GPG key
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" # set up the stable repository
+
 # Update, upgrade and clean up
 apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 
@@ -56,20 +68,18 @@ wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_alia
 # Install core utilities
 # dpkg will check if the application exists before attempting an install
 pkgs='
-x2goserver
-x2goserver-xsession
+burpsuite
 git
-curl
-sudo
-xfce4
-xfce4-goodies
-tightvncserver
 iceweasel
 openjdk-8-jre
-burpsuite
+sudo
+task-kde-desktop
+tightvncserver
+x2goserver
+x2goserver-xsession
 '
 if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
-  sudo apt-get install -qy $pkgs         # TODO: Why does one of these pkgs (xfce?) ask us to set the keyboard language. How to stop it?
+  sudo apt-get install -qy $pkgs
 fi
 
 # Setup & install golang
@@ -109,6 +119,10 @@ else
   echo "Installing golang from source as no current version exists"
   installGoFromTheGOOG
 fi
+
+
+
+
 
 # Clone some wordlists
 git clone https://github.com/danielmiessler/SecLists.git ~/hack_the_planet/wordlists

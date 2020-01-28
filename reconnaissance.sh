@@ -39,3 +39,5 @@ DOMAIN=$1
 if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.$DOMAIN +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
 	amass enum --passive -d $DOMAIN # TODO: Refine Command
 fi
+
+docker run --rm -it fdns -domain yahoo.com -record A -t 4 -url https://opendata.rapid7.com/sonar.fdns_v2/2019-12-29-1577638604-fdns_aaaa.json.gz

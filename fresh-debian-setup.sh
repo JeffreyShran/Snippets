@@ -69,6 +69,7 @@ wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_alia
 # dpkg will check if the application exists before attempting an install
 pkgs='
 burpsuite
+dnsutils
 git
 iceweasel
 openjdk-8-jre

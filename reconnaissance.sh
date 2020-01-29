@@ -8,36 +8,48 @@
 ############################################
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------
-# Takes a domain and passes it through various tools 
+# Takes a domain and passes it through various tools generating output files onto github.
 #
-#
-#
+# INPUT: DOMAIN
+# OUTPUT FILES: amass
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Amass - Install from kali repository
-	# amass enum --passive -d <DOMAIN>
-# Project Sonar - AWS, then build autonomous method in future
-	# 
-# commonspeak2 - Python script, later rewrite in golang
-	# 
-# waybackurls - go get github.com/tomnomnom/waybackurls
-	#
-# SORT ALL DATA
+if [[ $# = 0 ]]; then # Check for a domain being passed to the script.
+	echo "Nothing passed in."
+	exit 1
+fi
+
+DOMAIN=$1
+PATH_RECON="~/hack_the_planet/reconnaissance"
+PATH_WORDS="~/hack_the_planet/wordlists"
+PATH_TOOLS="~/hack_the_planet/tools"
+
+# Amass
+	# Check for wildcard configuration on DNS before running Amass.
+	# REF: medium.com/@noobhax/my-recon-process-dns-enumeration-d0e288f81a8a
+if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.$DOMAIN +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
+	amass enum --passive -d $DOMAIN > "$PATH_RECON/amass.subdomains.$DOMAIN.txt"
+fi
+
+# Project Sonar
+	# Currently pull from Athena, then build autonomous method in future.
+	# https://blog.rapid7.com/2018/10/16/how-to-conduct-dns-reconnaissance-for-02-using-rapid7-open-data-and-aws/
+
+# commonspeak2
+	# https://github.com/assetnote/commonspeak2-wordlists
+cat "$PATH_WORDS/commonspeak2/subdomains/subdomains.txt" |
+awk -v awkvar="$DOMAIN" '{ print $0 "." awkvar;}' > "$PATH_RECON/commonspeak2.subdomains.$DOMAIN.txt"
+
+# Sort and remove duplicates from current subdomains shortlist candidates.
+find "${PATH_RECON}/" -name "*$DOMAIN*" -print0 | xargs -0 sort -u > "${PATH_RECON}/unique.sorted.subdomains.${DOMAIN}.txt"
+
 # dnsgen - pip3 install dnsgen
 	#
 # httprobe - go get -u github.com/tomnomnom/httprobe
 	#
 # gobuster - go get github.com/OJ/gobuster
 	# gobuster dir -u <DOMAIN> -w ~/wordlists/shortlist.txt -q -n -e
+# waybackurls
+	# waybackurls internet.org | grep "\.js" | uniq | sort
 # bfac - git clone https:#github.com/mazen160/bfac.git
 	# bfac --list testing_list.txt (read help)
-
-DOMAIN=$1
-
-# Check for wildcard configuration on DNS before running Amass.
-# REF: medium.com/@noobhax/my-recon-process-dns-enumeration-d0e288f81a8a
-if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.$DOMAIN +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
-	amass enum --passive -d $DOMAIN # TODO: Refine Command
-fi
-
-docker run --rm -it fdns -domain yahoo.com -record A -t 4 -url https://opendata.rapid7.com/sonar.fdns_v2/2019-12-29-1577638604-fdns_aaaa.json.gz

@@ -73,9 +73,10 @@ dnsutils
 git
 iceweasel
 openjdk-8-jre
+pip3
+python3
 sudo
 task-kde-desktop
-tightvncserver
 x2goserver
 x2goserver-xsession
 '
@@ -121,34 +122,40 @@ else
   installGoFromTheGOOG
 fi
 
-
-
-
-
 # Clone some wordlists
-git clone https://github.com/danielmiessler/SecLists.git ~/hack_the_planet/wordlists
+git clone https://github.com/danielmiessler/SecLists.git ~/hack_the_planet/wordlists/seclists
+git clone https://github.com/assetnote/commonspeak2-wordlists.git ~/hack_the_planet/wordlists/commonspeak2
 
-# Install tools
-go get -u github.com/tomnomnom/assetfinder
+# Install tools - GO
+export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/... 
 go get -u github.com/tomnomnom/httprobe
-go get -u github.com/tomnomnom/meg
-go get github.com/tomnomnom/waybackurls
+go get -u github.com/tomnomnom/waybackurls
+go get github.com/OJ/gobuster
 
+# Install tools - PYTHON
+pip3 install dnsgen
+git clone https://github.com/mazen160/bfac.git ~/hack_the_planet/tools/bfac
 
+# Some ASCII art, because, why the heck not!?
 cat <<"EOF"
-                ___
-            ,-'"   "`-.
-          ,'_          `.  
-         / / \  ,-       \ 
-    __   | \_0 ---        |
-   /  |  |                |
-   \  \  `--.______,-/    |
- ___)  \  ,--""    ,/     |
-/    _  \ \-_____,-      / 
-\__-/ \  | `.          ,'  
-  \___/ <    ---------'    
-   \__/\ |             
-    \__//
+
+       Well, I think we got away with that, eh? Pooch!
+                   __
+                 .'  '.
+                :      :
+                | _  _ |
+             .-.|(o)(o)|.-.        _._          _._
+            ( ( | .--. | ) )     .',_ '.      .' _,'.
+             '-/ (    ) \-'     / /' `\ \ __ / /' `\ \
+              /   '--'   \     / /     \.'  './     \ \
+              \ `"===="` /     `-`     : _  _ :      `-`
+               `\      /'              |(o)(o)|
+                 `\  /'                |      |
+                 /`-.-`\_             /        \
+           _..:;\._/V\_./:;.._       /   .--.   \
+         .'/;:;:;\ /^\ /:;:;:\'.     |  (    )  |
+        / /;:;:;:;\| |/:;:;:;:\ \    _\  '--'  /__
+       / /;:;:;:;:;\_/:;:;:;:;:\ \ .'  '-.__.-'   `-.
 EOF
 #####################
 ### END OF SCRIPT ###

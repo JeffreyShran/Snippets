@@ -10,3 +10,4 @@ function cs () {
 #alias dirsearch-one=". <(cat domains | awk '{print \"dirsearch \"\$1 \" -e *\"}')"
 #alias openredirect=". <(cat domains | awk '{print \"dirsearch \"\$1 \" -w /path/to/dirsearch/db/open_redirect_wordlist.txt -e *\"}')"
 alias git-update="find . -name .git -type d -execdir git --git-dir '{}' fetch --all ';'"
+alias git-addcommit="git add -A && git commit -m"

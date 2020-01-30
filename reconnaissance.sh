@@ -31,9 +31,16 @@ if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.$DOMAIN +short | wc -l) <
 	amass enum --passive -d $DOMAIN > "$PATH_RECON/amass.subdomains.$DOMAIN.txt"
 fi
 
+# ffuf
+	# vhosts? Also see - https://twitter.com/joohoi/status/1222655322621390848?s=20
+	# https://github.com/ffuf/ffuf
+
 # Project Sonar
-	# Currently pull from Athena, then build autonomous method in future.
+	# https://github.com/erbbysam/DNSGrep - Roll Own. Limited to 100,000 rows returned.
+	# https://blog.erbbysam.com/index.php/2019/02/09/dnsgrep/
 	# https://blog.rapid7.com/2018/10/16/how-to-conduct-dns-reconnaissance-for-02-using-rapid7-open-data-and-aws/
+	# TODO: Large datasets return "jq: error (at <stdin>:16): Cannot iterate over null (null)"
+curl 'https://dns.bufferover.run/dns?q=${DOMAIN}' 2> /dev/null | jq '.FDNS_A[],.RDNS[]' | sed 's/[^,]*,//;s/.$//'
 
 # commonspeak2
 	# https://github.com/assetnote/commonspeak2-wordlists

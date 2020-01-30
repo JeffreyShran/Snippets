@@ -72,6 +72,7 @@ burpsuite
 dnsutils
 git
 iceweasel
+jq
 openjdk-8-jre
 pip3
 python3

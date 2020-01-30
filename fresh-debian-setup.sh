@@ -35,7 +35,7 @@ fi
 # Otherwise you have to run something like this each time as the
 # noninteractive will not persist:
 #     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn
-dpkg-reconfigure debconf --frontend=noninteractive
+dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get prompts.
 
 # Setup Kali repositories, mainly for burp.
 wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
@@ -62,7 +62,7 @@ git
 iceweasel
 jq
 openjdk-8-jre
-pip3
+python3-pip
 python3
 sudo
 task-kde-desktop

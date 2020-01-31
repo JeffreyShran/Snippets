@@ -54,9 +54,9 @@ mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
 # Update, upgrade and clean up
 apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 
-# Remove /root/.bash_aliases and recreate from GitHub file.
+# Remove /root/.bash_aliases and recreate dotfile from GitHub.
 # These are personalised bash commands and entirely optional
-rm -f /root/.bash_aliases                                                                                  # -f will ignore nonexistent files, never prompt.
+rm -f /root/.bash_aliases # -f will ignore nonexistent files, never prompt.
 curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "/root/.bash_aliases"
 
 # Install core utilities

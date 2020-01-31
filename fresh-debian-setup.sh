@@ -78,9 +78,9 @@ if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.c
   sudo apt-get install -qy $pkgs
 fi
 
-# Install Burp Suite
-wget "http://portswigger.net/burp/releases/download?product=community&amp;version=2.1.07&amp;type=jar" -O burp.jar 
-curl "https://portswigger.net/burp/releases?product=100&type=Jar" --create-dirs -o "/root/hack_the_planet/tools/burp/burp.jar"
+# Retrieve Burp Suite .jar file
+wget "http://portswigger.net/burp/releases/download?product=community&amp;version=2.1.07&amp;type=jar" -O burp.jar
+mkdir --parents /root/hack_the_planet/tools/burp/; mv burp.jar $_ # $_ expands to the last argument passed to the previous shell command, ie: the newly created directory
 chmod +x /root/hack_the_planet/tools/burp/burp.jar
 
 # Setup & install golang

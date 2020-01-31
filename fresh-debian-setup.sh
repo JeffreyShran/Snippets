@@ -38,30 +38,35 @@ fi
 dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get prompts.
 
 # Setup Kali repositories, mainly for burp.
-wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
-echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
-echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
+# wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
+# echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
+# echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
+
+# Setup Java for Burp Suite
+# Install repository for adoptopenjdk-13-hotspot-jre
+wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
+apt-get install -y software-properties-common
+sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 
 # Create directory structure
-mkdir -p ~/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
+mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
 
 # Update, upgrade and clean up
 apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 
-# Remove ~/.bash_aliases and recreate from GitHub file.
+# Remove /root/.bash_aliases and recreate from GitHub file.
 # These are personalised bash commands and entirely optional
-rm -f ~/.bash_aliases                                                                                  # -f will ignore nonexistent files, never prompt.
-wget -q https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases -O ~/.bash_aliases # -q Quiet -O Output file
+rm -f /root/.bash_aliases                                                                                  # -f will ignore nonexistent files, never prompt.
+curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "/root/.bash_aliases"
 
 # Install core utilities
 # dpkg will check if the application exists before attempting an install
 pkgs='
-burpsuite
 dnsutils
 git
 iceweasel
 jq
-openjdk-8-jre
+adoptopenjdk-13-hotspot-jre
 python3-pip
 python3
 sudo
@@ -72,6 +77,11 @@ x2goserver-xsession
 if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
   sudo apt-get install -qy $pkgs
 fi
+
+# Install Burp Suite
+wget "http://portswigger.net/burp/releases/download?product=community&amp;version=2.1.07&amp;type=jar" -O burp.jar 
+curl "https://portswigger.net/burp/releases?product=100&type=Jar" --create-dirs -o "/root/hack_the_planet/tools/burp/burp.jar"
+chmod +x /root/hack_the_planet/tools/burp/burp.jar
 
 # Setup & install golang
 # Debian sources are out of date so we need to sort it out manually
@@ -85,8 +95,8 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   cd ~
   wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
   tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
-  echo "export GOPATH=~/hack_the_planet/scripts/go" >>~/.profile # source intentionally not used here as it appears on next line
-  echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >>~/.profile && source ~/.profile
+  echo "export GOPATH=/root/hack_the_planet/scripts/go" >>/root/.profile # source intentionally not used here as it appears on next line
+  echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >>/root/.profile && source /root/.profile
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 
@@ -112,8 +122,8 @@ else
 fi
 
 # Clone some wordlists
-git clone https://github.com/danielmiessler/SecLists.git ~/hack_the_planet/wordlists/seclists
-git clone https://github.com/assetnote/commonspeak2-wordlists.git ~/hack_the_planet/wordlists/commonspeak2
+git clone https://github.com/danielmiessler/SecLists.git /root/hack_the_planet/wordlists/seclists
+git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack_the_planet/wordlists/commonspeak2
 
 # Install tools - GO
 export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/... 
@@ -123,7 +133,7 @@ go get github.com/OJ/gobuster
 
 # Install tools - PYTHON
 pip3 install dnsgen
-git clone https://github.com/mazen160/bfac.git ~/hack_the_planet/tools/bfac
+git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac
 
 # Some ASCII art, because, why the heck not!?
 cat <<"EOF"

@@ -20,9 +20,9 @@ if [[ $# = 0 ]]; then # Check for a domain being passed to the script.
 fi
 
 DOMAIN=$1
-PATH_RECON="~/hack_the_planet/reconnaissance"
-PATH_WORDS="~/hack_the_planet/wordlists"
-PATH_TOOLS="~/hack_the_planet/tools"
+PATH_RECON="/root/hack_the_planet/reconnaissance"
+PATH_WORDS="/root/hack_the_planet/wordlists"
+PATH_TOOLS="/root/hack_the_planet/tools"
 
 #--------------------------
 # Amass
@@ -75,7 +75,7 @@ find "${PATH_RECON}/" -name "*$DOMAIN*" -print0 | xargs -0 sort -u > "${PATH_REC
 #--------------------------
 # gobuster - go get github.com/OJ/gobuster
 #--------------------------
-	# gobuster dir -u <DOMAIN> -w ~/wordlists/shortlist.txt -q -n -e
+	# gobuster dir -u <DOMAIN> -w /root/wordlists/shortlist.txt -q -n -e
 #--------------------------
 # waybackurls
 #--------------------------

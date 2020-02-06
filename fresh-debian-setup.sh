@@ -37,16 +37,17 @@ fi
 #     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn
 dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get prompts.
 
-# Setup Kali repositories, mainly for burp.
+# Setup Kali repositories (NOTE: Removed in favour sources non reliant on Kali)
 # wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
 # echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
 # echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
 
 # Setup Java for Burp Suite
 # Install repository for adoptopenjdk-13-hotspot-jre
+# add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
-apt-get install -y software-properties-common
-sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -cs) main" >> /etc/apt/sources.list
+
 
 # Create directory structure
 mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
@@ -79,7 +80,7 @@ if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.c
 fi
 
 # Retrieve Burp Suite .jar file
-wget "http://portswigger.net/burp/releases/download?product=community&amp;version=2.1.07&amp;type=jar" -O burp.jar
+wget "http://portswigger.net/burp/releases/download?product=community&amp;type=jar" -O burp.jar
 mkdir --parents /root/hack_the_planet/tools/burp/; mv burp.jar $_ # $_ expands to the last argument passed to the previous shell command, ie: the newly created directory
 chmod +x /root/hack_the_planet/tools/burp/burp.jar
 
@@ -125,15 +126,18 @@ fi
 git clone https://github.com/danielmiessler/SecLists.git /root/hack_the_planet/wordlists/seclists
 git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack_the_planet/wordlists/commonspeak2
 
-# Install tools - GO
+# Install tools > GO <
 export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/... 
 go get -u github.com/tomnomnom/httprobe
 go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
 
-# Install tools - PYTHON
+# Install tools > PYTHON <
 pip3 install dnsgen
 git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac
+
+# Install tools > BASH <
+git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it; ~/.bash_it/install.sh --silent; source /root/.bashrc
 
 # Some ASCII art, because, why the heck not!?
 cat <<"EOF"

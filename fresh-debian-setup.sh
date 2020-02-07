@@ -122,7 +122,7 @@ else
   installGoFromTheGOOG
 fi
 
-# Clone some wordlists
+# Retrieve > WORDLISTS <
 git clone https://github.com/danielmiessler/SecLists.git /root/hack_the_planet/wordlists/seclists
 git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack_the_planet/wordlists/commonspeak2
 
@@ -137,7 +137,7 @@ pip3 install dnsgen
 git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac
 
 # Install tools > BASH <
-git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it; ~/.bash_it/install.sh --silent; source /root/.bashrc
+
 
 # Some ASCII art, because, why the heck not!?
 cat <<"EOF"

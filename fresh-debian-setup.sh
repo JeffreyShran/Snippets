@@ -68,7 +68,6 @@ jq
 adoptopenjdk-13-hotspot-jre
 python3-pip
 python3
-sudo
 task-kde-desktop
 x2goserver
 x2goserver-xsession
@@ -94,8 +93,7 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   cd ~
   wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
   tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
-  echo "export GOPATH=/root/hack_the_planet/scripts/go" >>/root/.profile # source intentionally not used here as it appears on next line
-  echo "export PATH='$PATH':/usr/local/go/bin:$GOPATH/bin" >>/root/.profile && source /root/.profile
+  echo -ne "export GOPATH=/root/hack_the_planet/scripts/go\nexport PATH='$PATH':/usr/local/go/bin:$GOPATH/bin\n" >> /root/.profile # source intentionally not used here as it does chuff all over ssh
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 

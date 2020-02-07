@@ -44,10 +44,8 @@ dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -q
 
 # Setup Java for Burp Suite
 # Install repository for adoptopenjdk-13-hotspot-jre
-# add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
 echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -cs) main" >> /etc/apt/sources.list
-
 
 # Create directory structure
 mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}

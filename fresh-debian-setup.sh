@@ -136,8 +136,8 @@ go get github.com/OJ/gobuster
 # Install tools > PYTHON <
 git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac && pip3 install $_/.
 
-# Install tools > BASH <
-
+# Change SSH port
+echo "Port 8888" >> /etc/ssh/sshd_config
 
 # Some ASCII art, because, why the heck not!?
 cat <<"EOF"

@@ -13,9 +13,17 @@
 #    https://dotnetrussell.com/SetupBare.sh
 #    https://unix.stackexchange.com/a/434061
 #
+# SSH tunnel from powershell: ssh -D 6666 USER@HOST -p 8888
+#
 # To execute the script, run the below command.
 # Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.
 #    wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | bash
+#
+# 'exit' at end to force bash refresh and read some paths that 'source' isn't handling correctly, likely due to connecting via SSH.
+#
+# Any feedback welcomed here or on twitter.
+# 
+# This is a living script that will evolve as my personal needs change over time.
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
 # This helps us to keep the script tidy in respect to error handling
@@ -35,17 +43,18 @@ fi
 # Otherwise you have to run something like this each time as the
 # noninteractive will not persist:
 #     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn
-dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get prompts.
+dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get occasional prompts.
 
-# Setup Kali repositories (NOTE: Removed in favour sources non reliant on Kali)
+# Setup Kali repositories (NOTE: Removed in favour of sources non-reliant on Kali due to package clashes etc between Debian main and Kali.)
 # wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
 # echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
 # echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
 
 # Setup Java for Burp Suite
 # Install repository for adoptopenjdk-13-hotspot-jre
-wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
-echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -cs) main" >> /etc/apt/sources.list
+# Removed as a browser and therefore burp are unusable over x2go.
+# wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
+# echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -cs) main" >> /etc/apt/sources.list
 
 # Create directory structure
 mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
@@ -63,23 +72,19 @@ curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliase
 pkgs='
 dnsutils
 git
-iceweasel
 jq
-adoptopenjdk-13-hotspot-jre
 python3-pip
 python3
-task-kde-desktop
-x2goserver
-x2goserver-xsession
 '
 if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
   sudo apt-get install -qy $pkgs
 fi
 
 # Retrieve Burp Suite .jar file
-wget "http://portswigger.net/burp/releases/download?product=community&amp;type=jar" -O burp.jar
-mkdir --parents /root/hack_the_planet/tools/burp/; mv burp.jar $_ # $_ expands to the last argument passed to the previous shell command, ie: the newly created directory
-chmod +x /root/hack_the_planet/tools/burp/burp.jar
+# Removed as a browser and therefore burp are unusable over x2go.
+# wget "http://portswigger.net/burp/releases/download?product=community&amp;type=jar" -O burp.jar
+# mkdir --parents /root/hack_the_planet/tools/burp/; mv burp.jar $_ # $_ expands to the last argument passed to the previous shell command, ie: the newly created directory
+# chmod +x /root/hack_the_planet/tools/burp/burp.jar
 
 # Setup & install golang
 # Debian sources are out of date so we need to sort it out manually
@@ -129,8 +134,7 @@ go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
 
 # Install tools > PYTHON <
-pip3 install dnsgen
-git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac
+git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac && pip3 install $_/.
 
 # Install tools > BASH <
 
@@ -152,10 +156,11 @@ cat <<"EOF"
                  `\  /'                |      |
                  /`-.-`\_             /        \
            _..:;\._/V\_./:;.._       /   .--.   \
-         .'/;:;:;\ /^\ /:;:;:\'.     |  (    )  |
+         .'/;:;:;\ /^\ /:;:;:\'.     |  (    )  |   ** Exits SSH connection **
         / /;:;:;:;\| |/:;:;:;:\ \    _\  '--'  /__
        / /;:;:;:;:;\_/:;:;:;:;:\ \ .'  '-.__.-'   `-.
 EOF
+exit
 #####################
 ### END OF SCRIPT ###
 #####################

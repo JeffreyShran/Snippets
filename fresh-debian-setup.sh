@@ -14,6 +14,7 @@
 #    https://unix.stackexchange.com/a/434061
 #
 # SSH tunnel from powershell: ssh -D LOCALPORT USER@HOST -p REMOTEPORT
+# Remove the old SSH key from the local machine after a rebuild: ssh-keygen -R HOST
 #
 # To execute the script, run the below command.
 # Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.

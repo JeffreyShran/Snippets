@@ -139,6 +139,7 @@ git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac 
 
 # Change SSH port
 echo "Port 8888" >> /etc/ssh/sshd_config
+service sshd restart # restart to set listening port
 
 # Some ASCII art, because, why the heck not!?
 cat <<"EOF"

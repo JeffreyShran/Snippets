@@ -20,7 +20,7 @@
 # Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.
 #    wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | bash
 #
-# 'exit' at end to force bash refresh and read some paths that 'source' isn't handling correctly, likely due to connecting via SSH.
+# You'll need to exit the SSH session to force bash refresh and read some paths that 'source' isn't handling correctly.
 #
 # Any feedback welcomed here or on twitter.
 # 
@@ -157,11 +157,10 @@ cat <<"EOF"
                  `\  /'                |      |
                  /`-.-`\_             /        \
            _..:;\._/V\_./:;.._       /   .--.   \
-         .'/;:;:;\ /^\ /:;:;:\'.     |  (    )  |   ** Exits SSH connection **
+         .'/;:;:;\ /^\ /:;:;:\'.     |  (    )  |
         / /;:;:;:;\| |/:;:;:;:\ \    _\  '--'  /__
        / /;:;:;:;:;\_/:;:;:;:;:\ \ .'  '-.__.-'   `-.
 EOF
-exit
 #####################
 ### END OF SCRIPT ###
 #####################

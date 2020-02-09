@@ -78,7 +78,7 @@ python3-pip
 python3
 '
 if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
-  sudo apt-get install -qy $pkgs
+  apt-get install -qy $pkgs
 fi
 
 # Retrieve Burp Suite .jar file

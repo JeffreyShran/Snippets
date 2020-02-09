@@ -13,7 +13,7 @@
 #    https://dotnetrussell.com/SetupBare.sh
 #    https://unix.stackexchange.com/a/434061
 #
-# SSH tunnel from powershell: ssh -D 6666 USER@HOST -p 8888
+# SSH tunnel from powershell: ssh -D LOCALPORT USER@HOST -p REMOTEPORT
 #
 # To execute the script, run the below command.
 # Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.

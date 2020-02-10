@@ -16,12 +16,9 @@
 # SSH tunnel from powershell: ssh -D LOCALPORT USER@HOST -p REMOTEPORT
 # Remove the old SSH key from the local machine after a rebuild: ssh-keygen -R HOST
 # 
-# update the system outside of this script. It causes wierd behaviour during prompts!?
-# apt update -qy && apt upgrade -qy && apt autoremove -qy
-# 
 # To execute the script, run the below command.
 # Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.
-#    wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | bash
+# apt update -qy && apt upgrade -qy && apt autoremove -qy && wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | bash
 #
 # You'll need to exit the SSH session to force bash refresh and read some paths that 'source' isn't handling correctly.
 #
@@ -44,14 +41,10 @@ fi
 # Create directory structure
 mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
 
-# Remove /root/.bash_aliases and recreate dotfile from GitHub.
-# These are personalised bash commands and entirely optional
-rm -f /root/.bash_aliases # -f will ignore nonexistent files, never prompt.
-curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "/root/.bash_aliases"
-
 # Install core utilities
 # dpkg will check if the application exists before attempting an install
 pkgs='
+curl
 dnsutils
 git
 jq
@@ -61,6 +54,11 @@ python3
 if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
   apt-get install -qy $pkgs
 fi
+
+# Remove /root/.bash_aliases and recreate dotfile from GitHub.
+# These are personalised bash commands and entirely optional
+rm -f /root/.bash_aliases # -f will ignore nonexistent files, never prompt.
+curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "/root/.bash_aliases"
 
 # Setup & install golang
 # Debian sources are out of date so we need to sort it out manually

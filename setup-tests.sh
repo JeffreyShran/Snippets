@@ -18,4 +18,4 @@ bfac
 '
 for p in $pkgs; do 
     hash "$p" &>/dev/null && echo "Y: $p" || echo "N: $p"
-done 
+done

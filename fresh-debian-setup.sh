@@ -15,7 +15,10 @@
 #
 # SSH tunnel from powershell: ssh -D LOCALPORT USER@HOST -p REMOTEPORT
 # Remove the old SSH key from the local machine after a rebuild: ssh-keygen -R HOST
-#
+# 
+# update the system outside of this script. It causes wierd behaviour during prompts!?
+# apt update -qy && apt upgrade -qy && apt autoremove -qy
+# 
 # To execute the script, run the below command.
 # Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.
 #    wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | bash
@@ -51,9 +54,6 @@ fi
 
 # Create directory structure
 mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
-
-# Update, upgrade and clean up
-apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y but didn't work under testing so using -qy here. TODO: Why not?
 
 # Remove /root/.bash_aliases and recreate dotfile from GitHub.
 # These are personalised bash commands and entirely optional

@@ -68,9 +68,6 @@ apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y bu
 rm -f /root/.bash_aliases # -f will ignore nonexistent files, never prompt.
 curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "/root/.bash_aliases"
 
-# Avoid conflicts during ssh install
-rm /etc/ssh/sshd_config
-
 # Install core utilities
 # dpkg will check if the application exists before attempting an install
 pkgs='

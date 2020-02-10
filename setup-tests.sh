@@ -7,9 +7,14 @@ dnsutils
 git
 bar
 jq
-python3-pip
+pip3
 python3
 go
+amass
+httprobe
+waybackurls
+gobuster
+bfac
 '
 for p in $pkgs; do 
     hash "$p" &>/dev/null && echo "Y: $p" || echo "N: $p"

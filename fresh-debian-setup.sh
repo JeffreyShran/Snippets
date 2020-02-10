@@ -45,7 +45,6 @@ mkdir -p /root/hack/{reconnaissance,scripts,tools,wordlists}
 # dpkg will check if the application exists before attempting an install
 pkgs='
 curl
-dnsutils
 git
 jq
 python3-pip

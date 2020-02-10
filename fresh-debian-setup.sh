@@ -38,14 +38,6 @@ if ! [ $(id -u) = 0 ] >/dev/null 2>&1; then # id -u used as POSIX compliant: htt
   exit 1
 fi
 
-# Change the frontend default behaviour of debconf to noninteractive
-# This helps to make the installs and updates etc non-interactive
-# (i.e You don't get asked questions)
-# Otherwise you have to run something like this each time as the
-# noninteractive will not persist:
-#     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn
-dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get occasional prompts.
-
 # Setup Kali repositories (NOTE: Removed in favour of sources non-reliant on Kali due to package clashes etc between Debian main and Kali.)
 # wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
 # echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;

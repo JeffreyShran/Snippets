@@ -41,17 +41,6 @@ if ! [ $(id -u) = 0 ] >/dev/null 2>&1; then # id -u used as POSIX compliant: htt
   exit 1
 fi
 
-# Setup Kali repositories (NOTE: Removed in favour of sources non-reliant on Kali due to package clashes etc between Debian main and Kali.)
-# wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
-# echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
-# echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
-
-# Setup Java for Burp Suite
-# Install repository for adoptopenjdk-13-hotspot-jre
-# Removed as a browser and therefore burp are unusable over x2go.
-# wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
-# echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ $(lsb_release -cs) main" >> /etc/apt/sources.list
-
 # Create directory structure
 mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
 
@@ -72,12 +61,6 @@ python3
 if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.com/a/54239534 dpkg -s exits with status 1 if any of the packages is not installed
   apt-get install -qy $pkgs
 fi
-
-# Retrieve Burp Suite .jar file
-# Removed as a browser and therefore burp are unusable over x2go.
-# wget "http://portswigger.net/burp/releases/download?product=community&amp;type=jar" -O burp.jar
-# mkdir --parents /root/hack_the_planet/tools/burp/; mv burp.jar $_ # $_ expands to the last argument passed to the previous shell command, ie: the newly created directory
-# chmod +x /root/hack_the_planet/tools/burp/burp.jar
 
 # Setup & install golang
 # Debian sources are out of date so we need to sort it out manually

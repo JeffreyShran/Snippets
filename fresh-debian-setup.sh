@@ -99,7 +99,7 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   cd ~
   wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
   tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
-  echo -ne "export GOPATH=/root/hack_the_planet/scripts/go\nexport PATH='$PATH':/usr/local/go/bin:$GOPATH/bin\n" >> /root/.profile # source intentionally not used here as it does chuff all over ssh
+  echo -ne "export GOPATH=/root/hack_the_planet/scripts/go\nexport PATH='$PATH':$GOPATH/bin\n" >> /root/.profile # source intentionally not used here as it does chuff all over ssh
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 
@@ -124,21 +124,22 @@ else
   installGoFromTheGOOG
 fi
 
-# Retrieve > WORDLISTS <
+# Create > WORDLISTS
 git clone https://github.com/danielmiessler/SecLists.git /root/hack_the_planet/wordlists/seclists
 git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack_the_planet/wordlists/commonspeak2
+mkdir -p /root/hack_the_planet/wordlists/jeffspeak/subdomains/; find /root/hack_the_planet/wordlists/seclists/Discovery/DNS /root/hack_the_planet/wordlists/commonspeak2/subdomains/ -name "*.txt" -print0 | xargs -0 sort -u > "/root/hack_the_planet/wordlists/jeffspeak/subdomains/seclists-commonspeak2.txt"
 
-# Install tools > GO <
+# Install tools > GO
 export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/... 
 go get -u github.com/tomnomnom/httprobe
 go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
 
-# Install tools > PYTHON <
+# Install tools > PYTHON
 git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac && pip3 install $_/.
 
 # Change SSH port
-echo "Port 8888" >> /etc/ssh/sshd_config
+echo "Port 4321" >> /etc/ssh/sshd_config
 service sshd restart # restart to set listening port
 
 # Some ASCII art, because, why the heck not!?

@@ -15,7 +15,7 @@
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
 if [[ $# = 0 ]]; then # Check for a domain being passed to the script.
-	echo "Nothing passed in."
+	echo "Pass a domain in you dummy."
 	exit 1
 fi
 
@@ -53,11 +53,11 @@ if [[ $(cat "$PATH_RECON/rapid7.subdomains.$DOMAIN.txt" | grep "output limit rea
 fi
 
 #--------------------------
-# commonspeak2
+# jeffspeak
 #--------------------------
 	# https://github.com/assetnote/commonspeak2-wordlists
-cat "$PATH_WORDS/commonspeak2/subdomains/subdomains.txt" |
-awk -v awkvar="$DOMAIN" '{ print $0 "." awkvar;}' > "$PATH_RECON/commonspeak2.subdomains.$DOMAIN.txt"
+cat "$PATH_WORDS/jeffspeak/subdomains/seclists-commonspeak2.txt" |
+awk -v awkvar="$DOMAIN" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.subdomains.$DOMAIN.txt"
 
 #--------------------------
 # unique/sort

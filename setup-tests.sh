@@ -1,9 +1,8 @@
 #!/bin/bash
 
 pkgs='
+negativeTest
 curl
-foo
-dnsutils
 git
 bar
 jq

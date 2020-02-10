@@ -73,7 +73,7 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
   tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
   echo "export GOPATH=/root/hack_the_planet/scripts/go" >> /root/.profile; source /root/.profile
-  echo "export PATH='$PATH':$GOPATH/bin" >> /root/.profile; source /root/.profile
+  echo "export PATH=$PATH:/usr/local/go/bin" >> /root/.profile; source /root/.profile
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 

@@ -20,9 +20,9 @@ if [[ $# = 0 ]]; then # Check for a domain being passed to the script.
 fi
 
 DOMAIN=$1
-PATH_RECON="/root/hack_the_planet/reconnaissance"
-PATH_WORDS="/root/hack_the_planet/wordlists"
-PATH_TOOLS="/root/hack_the_planet/tools"
+PATH_RECON="/root/hack/reconnaissance"
+PATH_WORDS="/root/hack/wordlists"
+PATH_TOOLS="/root/hack/tools"
 
 #--------------------------
 # Amass

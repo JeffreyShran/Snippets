@@ -39,7 +39,7 @@ if ! [ $(id -u) = 0 ] >/dev/null 2>&1; then # id -u used as POSIX compliant: htt
 fi
 
 # Create directory structure
-mkdir -p /root/hack_the_planet/{reconnaissance,scripts,tools,wordlists}
+mkdir -p /root/hack/{reconnaissance,scripts,tools,wordlists}
 
 # Install core utilities
 # dpkg will check if the application exists before attempting an install
@@ -72,8 +72,11 @@ function installGoFromTheGOOG() { # Pulls down latest golang direct from Google 
   cd ~
   wget https://dl.google.com/go/$AVAILABLEVERSION.linux-amd64.tar.gz
   tar -C /usr/local -xzf $AVAILABLEVERSION.linux-amd64.tar.gz
-  echo "export GOPATH=/root/hack_the_planet/scripts/go" >> /root/.profile; source /root/.profile
-  echo "export PATH=$PATH:/usr/local/go/bin" >> /root/.profile; source /root/.profile
+  chown -R root:root /usr/local/go
+  mkdir -p $HOME/go/{bin,src}
+  echo "export GOPATH=$HOME/go" >> /root/.profile; source /root/.profile
+  echo "export PATH=$PATH:$GOPATH/bin:/usr/local/go/bin" >> /root/.profile
+  . /root/.profile
   rm $AVAILABLEVERSION.linux-amd64.tar.gz
 }
 
@@ -99,9 +102,9 @@ else
 fi
 
 # Create > WORDLISTS
-git clone https://github.com/danielmiessler/SecLists.git /root/hack_the_planet/wordlists/seclists
-git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack_the_planet/wordlists/commonspeak2
-mkdir -p /root/hack_the_planet/wordlists/jeffspeak/subdomains/; find /root/hack_the_planet/wordlists/seclists/Discovery/DNS /root/hack_the_planet/wordlists/commonspeak2/subdomains/ -name "*.txt" -print0 | xargs -0 sort -u > "/root/hack_the_planet/wordlists/jeffspeak/subdomains/seclists-commonspeak2.txt"
+git clone https://github.com/danielmiessler/SecLists.git /root/hack/wordlists/seclists
+git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack/wordlists/commonspeak2
+mkdir -p /root/hack/wordlists/jeffspeak/subdomains/; find /root/hack/wordlists/seclists/Discovery/DNS /root/hack/wordlists/commonspeak2/subdomains/ -name "*.txt" -print0 | xargs -0 sort -u > "/root/hack/wordlists/jeffspeak/subdomains/seclists-commonspeak2.txt"
 
 # Install tools > GO
 export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/... 
@@ -110,7 +113,7 @@ go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
 
 # Install tools > PYTHON
-git clone https://github.com/mazen160/bfac.git /root/hack_the_planet/tools/bfac && pip3 install $_/.
+git clone https://github.com/mazen160/bfac.git /root/hack/tools/bfac && pip3 install $_/.
 
 # Change SSH port
 echo "Port 4321" >> /etc/ssh/sshd_config

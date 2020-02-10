@@ -46,10 +46,6 @@ fi
 #     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn
 dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get occasional prompts.
 
-# Installer sporadically fails, to fix the re-run:
-apt-get install -f # To fix broken packages
-dpkg --configure -a # Let dpkg fix itself
-
 # Setup Kali repositories (NOTE: Removed in favour of sources non-reliant on Kali due to package clashes etc between Debian main and Kali.)
 # wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -
 # echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list;
@@ -71,6 +67,9 @@ apt update -qy && apt upgrade -qy && apt autoremove -qy # -qq should imply -y bu
 # These are personalised bash commands and entirely optional
 rm -f /root/.bash_aliases # -f will ignore nonexistent files, never prompt.
 curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "/root/.bash_aliases"
+
+# Avoid conflicts during ssh install
+rm /etc/ssh/sshd_config
 
 # Install core utilities
 # dpkg will check if the application exists before attempting an install

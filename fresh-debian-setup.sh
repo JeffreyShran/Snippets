@@ -18,7 +18,7 @@
 #
 # To execute the script, run the below command.
 # Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.
-#    wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | bash
+# 
 #
 # You'll need to exit the SSH session to force bash refresh and read some paths that 'source' isn't handling correctly.
 #
@@ -45,6 +45,10 @@ fi
 # noninteractive will not persist:
 #     sudo DEBIAN_FRONTEND=noninteractive apt-get install slrn
 dpkg-reconfigure debconf --frontend=noninteractive # TODO: Even with this and -qy set, we still get occasional prompts.
+
+# Installer sporadically fails, to fix the re-run:
+apt-get install -f # To fix broken packages
+dpkg --configure -a # Let dpkg fix itself
 
 # Setup Kali repositories (NOTE: Removed in favour of sources non-reliant on Kali due to package clashes etc between Debian main and Kali.)
 # wget -q -O - archive.kali.org/archive-key.asc | sudo apt-key add -

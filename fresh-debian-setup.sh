@@ -133,7 +133,7 @@ echo "Port 4321" >> /etc/ssh/sshd_config
 service sshd restart # restart to set listening port
 
 # Some ASCII art, because, why the heck not!?
-cat <<"EOF"
+cat << EOF
 
        Well, I think we got away with that, eh? Pooch!
                    __

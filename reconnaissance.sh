@@ -27,8 +27,8 @@ PATH_TOOLS="/root/hack/tools"
 #--------------------------
 # Amass
 #--------------------------
-	# Check for wildcard configuration on DNS before running Amass.
-	# REF: medium.com/@noobhax/my-recon-process-dns-enumeration-d0e288f81a8a
+# Check for wildcard configuration on DNS before running Amass.
+# REF: medium.com/@noobhax/my-recon-process-dns-enumeration-d0e288f81a8a
 if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.$DOMAIN +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
 	amass enum --passive -d $DOMAIN > "$PATH_RECON/amass.subdomains.$DOMAIN.txt"
 fi
@@ -36,16 +36,17 @@ fi
 #--------------------------
 # ffuf
 #--------------------------
-	# vhosts? Also see - https://twitter.com/joohoi/status/1222655322621390848?s=20
-	# https://github.com/ffuf/ffuf
+# vhosts? Also see - https://twitter.com/joohoi/status/1222655322621390848?s=20
+# https://github.com/ffuf/ffuf
 
 #--------------------------
 # rapid7
+#
+# https://github.com/erbbysam/DNSGrep - Roll Own. Limited to 100,000 rows returned.
+# https://blog.erbbysam.com/index.php/2019/02/09/dnsgrep/
+# https://blog.rapid7.com/2018/10/16/how-to-conduct-dns-reconnaissance-for-02-using-rapid7-open-data-and-aws/
+# TODO: Large datasets return "jq: error (at <stdin>:16): Cannot iterate over null (null)"
 #--------------------------
-	# https://github.com/erbbysam/DNSGrep - Roll Own. Limited to 100,000 rows returned.
-	# https://blog.erbbysam.com/index.php/2019/02/09/dnsgrep/
-	# https://blog.rapid7.com/2018/10/16/how-to-conduct-dns-reconnaissance-for-02-using-rapid7-open-data-and-aws/
-	# TODO: Large datasets return "jq: error (at <stdin>:16): Cannot iterate over null (null)"
 curl "https://dns.bufferover.run/dns?q=$DOMAIN" 2> /dev/null > "$PATH_RECON/rapid7.subdomains.$DOMAIN.txt"
 
 if [[ $(cat "$PATH_RECON/rapid7.subdomains.$DOMAIN.txt" | grep "output limit reached" | wc -l) = 0 ]]; then
@@ -55,14 +56,13 @@ fi
 #--------------------------
 # jeffspeak
 #--------------------------
-	# https://github.com/assetnote/commonspeak2-wordlists
 cat "$PATH_WORDS/jeffspeak/subdomains/seclists-commonspeak2.txt" |
 awk -v awkvar="$DOMAIN" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.subdomains.$DOMAIN.txt"
 
 #--------------------------
 # unique/sort
 #--------------------------
-find "${PATH_RECON}/" -name "*$DOMAIN*" -print0 | xargs -0 sort -u > "${PATH_RECON}/unique.sorted.subdomains.${DOMAIN}.txt"
+find "${PATH_RECON}/" -name "*$DOMAIN*" -print0 | xargs -0 sort -u > "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt"
 
 #--------------------------
 # dnsgen - pip3 install dnsgen
@@ -70,8 +70,11 @@ find "${PATH_RECON}/" -name "*$DOMAIN*" -print0 | xargs -0 sort -u > "${PATH_REC
 	#
 #--------------------------
 # httprobe - go get -u github.com/tomnomnom/httprobe
+#
+# Maybe use github.com/tomnomnom/gron prior to httprobe to reduce list to in scope only somehow?
 #--------------------------
-	#
+cat "${PATH_RECON}/unique.sorted.subdomains.${DOMAIN}.txt" | httprobe -c 100 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
+
 #--------------------------
 # gobuster - go get github.com/OJ/gobuster
 #--------------------------

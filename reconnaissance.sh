@@ -25,6 +25,9 @@ PATH_WORDS="/root/hack/wordlists"
 PATH_TOOLS="/root/hack/tools"
 PATH_SCRIPTS="/root/hack/scripts"
 
+# Before we do anything establish whats in or out of scope.
+# jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <rapyd.json | tr -d '"' >rapyd.excludes
+
 #--------------------------
 # Amass
 #--------------------------

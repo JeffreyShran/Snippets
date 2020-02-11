@@ -39,7 +39,7 @@ if ! [ $(id -u) = 0 ] >/dev/null 2>&1; then # id -u used as POSIX compliant: htt
 fi
 
 # Create directory structure
-mkdir -p /root/hack/{reconnaissance,scripts,tools,wordlists}
+mkdir -p /root/hack/{reconnaissance,scopes,scripts,tools,wordlists}
 
 # Install core utilities
 # dpkg will check if the application exists before attempting an install

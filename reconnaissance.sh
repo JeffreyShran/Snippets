@@ -19,29 +19,31 @@ cat << EOF
 # Takes a domain and passes it through various tools generating output files onto github.
 #
 # INPUT: DOMAIN
-# RUN: wget --no-cache -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh?$(date +%s)" | bash -s drhanson.dev
+# RUN: wget --no-cache -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh?$(date +%s)" | bash /dev/stdin -h
 ######################################################################################################################################################
 
 usage: reconnaissance [OPTION]
 
-	-d DOMAIN	(required) 		Do not include https. i.e. supply as example.com.
+	-d DOMAIN	(required)      Do not include https. i.e. supply as example.com.
 	-s SCOPE	(Not required) 	Must be path to HackerOne burp configuration for burp, include full path. If included the whole thing is faster and more accurate.
-	-h HELP		(Not required)	Prints this usage information.
-	-v VERSION	(Not required)	Prints current version.
+	-h HELP		(Not required)  Prints this usage information.
+	-v VERSION	(Not required)  Prints current version.
 
 Report bugs to: @jeffreyshran (twitter)
 EOF
+1>&2; # Take the unix_commands standard error stream 2, and redirect > the stream (of errors) to the standard output memory address &1, so that they will be streamed to the terminal and printed.
+exit 1; 
 }
 
 while getopts 'd:' flag; do
   case "${flag}" in
-    d) domain="${OPTARG}" [ -z "${d}" ] || print_usage;;
+    d) domain="${OPTARG}" [ -z "${d}" ] || print_usage ;;
     s) scope="${OPTARG}" ;;
 	v) version='0.1' ;;
     h | *) print_usage ;;
     :)
-      echo "Option -$OPTARG requires an argument." >&2
-      exit 1
+      echo "Option -$OPTARG requires an argument." 1>&2
+	  print_usage
       ;;
 
   esac

@@ -11,7 +11,7 @@
 # Takes a domain and passes it through various tools generating output files onto github.
 #
 # INPUT: DOMAIN
-# OUTPUT FILES: amass
+# RUN: wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh?$(date +%s)" | bash example.com
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
 if [[ $# = 0 ]]; then # Check for a domain being passed to the script.

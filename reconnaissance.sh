@@ -65,8 +65,14 @@ while getopts ":d:svh" opt; do
 done
 shift $((OPTIND -1))
 
-echo "d:${d}"
-echo "s:${s}"
+if [ -z "${d}" ]; then
+	echo "Need a domain to continue..."
+	exit 1;
+fi
+
+echo "Domain is ${d}"
+echo "Scope File: ${s}"
+
 exit 1;
 
 PATH_RECON="/root/hack/reconnaissance"

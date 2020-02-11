@@ -42,12 +42,7 @@ while getopts 'd:svh' flag; do
     d) domain="${OPTARG}" [ -z "${d}" ] || print_usage ;;
     s) scope="${OPTARG}" ;;
 	v) version='0.1' ;;
-    h | *) print_usage ;;
-    :)
-      echo "Option -$OPTARG requires an argument." 1>&2
-	  print_usage
-      ;;
-
+    h | *) print_usage;;
   esac
 done
 

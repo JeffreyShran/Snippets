@@ -114,6 +114,9 @@ go get github.com/OJ/gobuster
 # Install tools > PYTHON
 git clone https://github.com/mazen160/bfac.git /root/hack/tools/bfac && pip3 install $_/.
 
+# Install scripts
+wget https://raw.githubusercontent.com/OWASP/Amass/master/examples/config.ini -O amass.config.ini # This needs our keys adding into it.
+
 # Change SSH port
 echo "Port 4321" >> /etc/ssh/sshd_config
 service sshd restart # restart to set listening port

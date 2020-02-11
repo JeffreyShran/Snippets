@@ -103,7 +103,18 @@ fi
 # Create > WORDLISTS
 git clone https://github.com/danielmiessler/SecLists.git /root/hack/wordlists/seclists
 git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack/wordlists/commonspeak2
-mkdir -p /root/hack/wordlists/jeffspeak/subdomains/; find /root/hack/wordlists/seclists/Discovery/DNS /root/hack/wordlists/commonspeak2/subdomains/ -name "*.txt" -print0 | xargs -0 sort -u > "/root/hack/wordlists/jeffspeak/subdomains/seclists-commonspeak2.txt"
+
+SOURCE_DIR=/root/hack/wordlists
+rm -f "$SOURCE_DIR/jeffspeak/subdomains/jeffsecspeak2.txt"
+mkdir -p /root/hack/wordlists/jeffspeak/subdomains/
+files=(
+"$SOURCE_DIR"/seclists/Discovery/DNS/shubs-subdomains.txt
+"$SOURCE_DIR"/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+"$SOURCE_DIR"/seclists/Discovery/DNS/deepmagic.com-prefixes-top500.txt
+"$SOURCE_DIR"/seclists/Discovery/DNS/sortedcombined-knock-dnsrecon-fierce-reconng.txt
+"$SOURCE_DIR"/commonspeak2/subdomains/subdomains.txt
+)
+sort -u "${files[@]}" >"$SOURCE_DIR/jeffspeak/subdomains/jeffsecspeak2.txt"
 
 # Install tools > GO
 export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/... 

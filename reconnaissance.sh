@@ -35,12 +35,6 @@ if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.$DOMAIN +short | wc -l) <
 fi
 
 #--------------------------
-# ffuf
-#--------------------------
-# vhosts? Also see - https://twitter.com/joohoi/status/1222655322621390848?s=20
-# https://github.com/ffuf/ffuf
-
-#--------------------------
 # rapid7
 #
 # https://github.com/erbbysam/DNSGrep - Roll Own. Limited to 100,000 rows returned.
@@ -48,7 +42,7 @@ fi
 # https://blog.rapid7.com/2018/10/16/how-to-conduct-dns-reconnaissance-for-02-using-rapid7-open-data-and-aws/
 # TODO: Large datasets return "jq: error (at <stdin>:16): Cannot iterate over null (null)"
 #--------------------------
-curl "https://dns.bufferover.run/dns?q=$DOMAIN" 2> /dev/null > "$PATH_RECON/rapid7.subdomains.$DOMAIN.txt"
+curl "https://dns.bufferover.run/dns?q=$DOMAIN" 2> /dev/null > "$PATH_RECON/rapid7.temp.subdomains.$DOMAIN.txt"
 
 if [[ $(cat "$PATH_RECON/rapid7.temp.subdomains.$DOMAIN.txt" | grep "output limit reached" | wc -l) = 0 ]]; then
 	jq '.FDNS_A[]?,.RDNS[]?' "$PATH_RECON/rapid7.temp.subdomains.$DOMAIN.txt" | sed 's/[^,]*,//;s/.$//' > "$PATH_RECON/rapid7.subdomains.$DOMAIN.txt"
@@ -68,15 +62,15 @@ awk -v awkvar="$DOMAIN" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.subdo
 find "${PATH_RECON}/" -name "*$DOMAIN*" -print0 | xargs -0 sort -u > "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt"
 
 #--------------------------
-# dnsgen - pip3 install dnsgen
-#--------------------------
-	#
-#--------------------------
 # httprobe - go get -u github.com/tomnomnom/httprobe
 #
 # Maybe use github.com/tomnomnom/gron prior to httprobe to reduce list to in scope only somehow?
 #--------------------------
 cat "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" | httprobe -c 100 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
+
+
+# FUTURE ADDITIONS...
+
 
 #--------------------------
 # gobuster - go get github.com/OJ/gobuster
@@ -90,3 +84,12 @@ cat "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" | httprobe -c 100 > "${PATH_
 # bfac - git clone https:#github.com/mazen160/bfac.git
 #--------------------------
 	# bfac --list testing_list.txt (read help)
+#--------------------------
+# dnsgen - pip3 install dnsgen
+#--------------------------
+	#
+#--------------------------
+# ffuf
+#--------------------------
+# vhosts? Also see - https://twitter.com/joohoi/status/1222655322621390848?s=20
+# https://github.com/ffuf/ffuf

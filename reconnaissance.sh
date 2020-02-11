@@ -30,7 +30,7 @@ usage: reconnaissance [OPTION]
 	-h HELP		(Not required)  Prints this usage information.
 	-v VERSION	(Not required)  Prints current version.
 
-Report bugs to: @jeffreyshran (twitter)
+Report bugs to: @jeffreyshran (Twitter)
 
 EOF
 1>&2; # Take the unix_commands standard error stream 2, and redirect > the stream (of errors) to the standard output memory address &1, so that they will be streamed to the terminal and printed.

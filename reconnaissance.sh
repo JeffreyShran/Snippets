@@ -46,21 +46,28 @@ while getopts ":d:svh" opt; do
       scope="${OPTARG}"
       ;;
 	v )
-      echo "0.1" 1>&2; exit 1;
+      echo "0.1" 1>&2;
+	  exit 1;
       ;;
 	h )
-	  print_usage 1>&2
+	  print_usage 1>&2;
+	  exit 1;
 	  ;;
     \? )
-      echo "Invalid option: $OPTARG" 1>&2
+      echo "Invalid option: $OPTARG" 1>&2;
+	  exit 1;
       ;;
     : )
-      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      echo "Invalid option: $OPTARG requires an argument" 1>&2;
+	  exit 1;
       ;;
   esac
 done
 shift $((OPTIND -1))
 
+echo "d:${d}"
+echo "s:${s}"
+exit 1;
 
 PATH_RECON="/root/hack/reconnaissance"
 PATH_WORDS="/root/hack/wordlists"

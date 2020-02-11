@@ -37,14 +37,30 @@ EOF
 exit 1; 
 }
 
-while getopts 'd:svh' flag; do
-  case "${flag}" in
-    d) domain="${OPTARG}" [ -z "${d}" ] || print_usage ;;
-    s) scope="${OPTARG}" ;;
-	v) version='0.1' ;;
-    h | *) print_usage;;
+while getopts ":d:svh" opt; do
+  case ${opt} in
+    d )
+      domain="${OPTARG}"
+      ;;
+	s )
+      scope="${OPTARG}"
+      ;;
+	v )
+      echo "0.1" 1>&2
+      ;;
+	h )
+	  print_usage 1>&2
+	  ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      ;;
   esac
 done
+shift $((OPTIND -1))
+
 
 PATH_RECON="/root/hack/reconnaissance"
 PATH_WORDS="/root/hack/wordlists"

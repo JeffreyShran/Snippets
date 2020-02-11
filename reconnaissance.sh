@@ -15,6 +15,7 @@
 
 print_usage() {
 cat << EOF
+
 ######################################################################################################################################################
 # Takes a domain and passes it through various tools generating output files onto github.
 #
@@ -30,12 +31,13 @@ usage: reconnaissance [OPTION]
 	-v VERSION	(Not required)  Prints current version.
 
 Report bugs to: @jeffreyshran (twitter)
+
 EOF
 1>&2; # Take the unix_commands standard error stream 2, and redirect > the stream (of errors) to the standard output memory address &1, so that they will be streamed to the terminal and printed.
 exit 1; 
 }
 
-while getopts 'd:' flag; do
+while getopts 'd:svh' flag; do
   case "${flag}" in
     d) domain="${OPTARG}" [ -z "${d}" ] || print_usage ;;
     s) scope="${OPTARG}" ;;

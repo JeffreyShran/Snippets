@@ -7,14 +7,6 @@
 ### GITHUB:  github.com/JeffreyShran     ###
 ############################################
 
-######################################################################################################################################################
-# Takes a domain and passes it through various tools generating output files onto github.
-#
-# INPUT: DOMAIN
-# RUN: wget --no-cache -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh?$(date +%s)" | bash -s drhanson.dev
-######################################################################################################################################################
-
-
 #------------------------------------------------------------------------------
 # Get input
 # doesn't support long options, only single-character options
@@ -23,6 +15,13 @@
 
 print_usage() {
 cat << EOF
+######################################################################################################################################################
+# Takes a domain and passes it through various tools generating output files onto github.
+#
+# INPUT: DOMAIN
+# RUN: wget --no-cache -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh?$(date +%s)" | bash -s drhanson.dev
+######################################################################################################################################################
+
 usage: reconnaissance [OPTION]
 
 	-d DOMAIN	(required) 		Do not include https. i.e. supply as example.com.

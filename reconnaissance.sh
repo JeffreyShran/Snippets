@@ -20,7 +20,7 @@ cat << EOF
 # Takes a domain and passes it through various tools generating output files onto github.
 #
 # INPUT: DOMAIN
-# RUN: wget --no-cache -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh?$(date +%s)" | bash /dev/stdin -h
+# RUN: wget -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh" | bash /dev/stdin -h
 ######################################################################################################################################################
 
 usage: reconnaissance [OPTION]

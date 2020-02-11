@@ -66,7 +66,7 @@ find "${PATH_RECON}/" -name "*$DOMAIN*" -print0 | xargs -0 sort -u > "${PATH_REC
 #
 # Maybe use github.com/tomnomnom/gron prior to httprobe to reduce list to in scope only somehow?
 #--------------------------
-cat "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" | httprobe -c 100 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
+cat "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" | httprobe -c 100 -t 3000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
 
 # FUTURE ADDITIONS...

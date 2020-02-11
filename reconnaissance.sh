@@ -46,7 +46,7 @@ while getopts ":d:svh" opt; do
       scope="${OPTARG}"
       ;;
 	v )
-      echo "0.1" 1>&2
+      echo "0.1" 1>&2; exit 1;
       ;;
 	h )
 	  print_usage 1>&2

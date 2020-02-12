@@ -70,12 +70,6 @@ if [ -z "$domain" ]; then
 	exit 1;
 fi
 
-echo "Domain is ${domain}"
-echo "$domain"
-echo "Scope File: ${scope}"
-
-exit 1;
-
 PATH_RECON="/root/hack/reconnaissance"
 PATH_WORDS="/root/hack/wordlists"
 PATH_TOOLS="/root/hack/tools"
@@ -87,15 +81,16 @@ PATH_SCOPES="/root/hack/scopes"
 #
 # Before we do anything establish whats in or out of scope.
 #------------------------------------------------------------------------------
-# jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <"$PATH_SCOPES/${s}" | tr -d '"' >"$PATH_SCOPES/excludes.${s}"
+# jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <"$PATH_SCOPES/${scope}" | tr -d '"' >"$PATH_SCOPES/excludes.${scope}"
 
 #------------------------------------------------------------------------------
 # Amass
 #------------------------------------------------------------------------------
 # Check for wildcard configuration on DNS before running Amass.
 # REF: medium.com/@noobhax/my-recon-process-dns-enumeration-d0e288f81a8a
-if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.${d} +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
-	amass enum -config "$PATH_SCRIPTS/amass.config.ini" --passive -d ${d} > "$PATH_RECON/amass.subdomains.${d}.txt"
+echo "Starting Amass"
+if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.${domain} +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
+	amass enum -config "$PATH_SCRIPTS/amass.config.ini" --passive -d ${domain} > "$PATH_RECON/amass.subdomains.${domain}.txt"
 fi
 
 #------------------------------------------------------------------------------
@@ -106,25 +101,28 @@ fi
 # https://blog.rapid7.com/2018/10/16/how-to-conduct-dns-reconnaissance-for-02-using-rapid7-open-data-and-aws/
 # TODO: Large datasets return "jq: error (at <stdin>:16): Cannot iterate over null (null)"
 #------------------------------------------------------------------------------
-curl "https://dns.bufferover.run/dns?q=${d}" 2> /dev/null > "$PATH_RECON/rapid7.temp.subdomains.${d}.txt"
+echo "Starting rapid7"
+curl "https://dns.bufferover.run/dns?q=${domain}" 2> /dev/null > "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt"
 
-if [[ $(cat "$PATH_RECON/rapid7.temp.subdomains.${d}.txt" | grep "output limit reached" | wc -l) = 0 ]]; then
-	jq '.FDNS_A[]?,.RDNS[]?' "$PATH_RECON/rapid7.temp.subdomains.${d}.txt" |
-	sed 's/[^,]*,//;s/.$//' > "$PATH_RECON/rapid7.subdomains.${d}.txt"
+if [[ $(cat "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt" | grep "output limit reached" | wc -l) = 0 ]]; then
+	jq '.FDNS_A[]?,.RDNS[]?' "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt" |
+	sed 's/[^,]*,//;s/.$//' > "$PATH_RECON/rapid7.subdomains.${domain}.txt"
 fi
 
-rm -f "$PATH_RECON/rapid7.temp.subdomains.${d}.txt"
+rm -f "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt"
 
 #------------------------------------------------------------------------------
 # JeffSecSpeak2
 #------------------------------------------------------------------------------
+echo "Starting JeffSecSpeak2"
 cat "$PATH_WORDS/jeffspeak/subdomains/jeffsecspeak2.txt" |
-awk -v awkvar="${d}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.subdomains.${d}.txt"
+awk -v awkvar="${domain}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.subdomains.${domain}.txt"
 
 #------------------------------------------------------------------------------
 # unique/sort & httprobe
 #------------------------------------------------------------------------------
-sort -u "${PATH_RECON}/*${d}*" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
+echo "Starting unique/sort & httprobe"
+sort -u "${PATH_RECON}/*${domain}*" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
 httprobe -c 500 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
 # FUTURE ADDITIONS...

@@ -20,7 +20,7 @@ cat << EOF
 # Takes a domain and passes it through various tools generating output files onto github.
 #
 # INPUT: DOMAIN
-# RUN: wget -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/pjem.sh" | bash /dev/stdin -v
+# RUN: wget -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/PJem.sh" | bash /dev/stdin -d att.com
 ######################################################################################################################################################
 
 usage: pjem [OPTION]

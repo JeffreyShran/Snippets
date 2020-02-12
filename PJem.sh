@@ -125,6 +125,16 @@ echo "Starting unique/sort & httprobe"
 FILES=("$PATH_RECON"/*"${domain}"*); sort -u "${FILES[@]}" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
 httprobe -c 500 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
+#------------------------------------------------------------------------------
+# timer
+#------------------------------------------------------------------------------
+echo "Script finished in $SECONDS seconds."
+
+### END ###
+
+
+
+
 # FUTURE ADDITIONS...
 
 #------------------------------------------------------------------------------

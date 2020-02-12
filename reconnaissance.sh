@@ -71,6 +71,7 @@ if [ -z "{$d}" ]; then
 fi
 
 echo "Domain is ${domain}"
+echo "{$d}"
 echo "Scope File: ${scope}"
 
 exit 1;

@@ -65,7 +65,7 @@ while getopts ":d:s:vh" opt; do
 done
 shift $((OPTIND -1))
 
-if [ -z "{$domain}" ]; then
+if [ -z "{$d}" ]; then
 	echo "Need a domain to continue..."
 	exit 1;
 fi

@@ -38,12 +38,12 @@ exit 1;
 }
 
 while getopts ":d:svh" opt; do
-  case ${opt} in
+  case "${opt}" in
     d )
-      domain="${OPTARG}"
+      domain=${OPTARG}
       ;;
 	s )
-      scope="${OPTARG}"
+      scope=${OPTARG}
       ;;
 	v )
       echo "0.1" 1>&2;
@@ -65,13 +65,13 @@ while getopts ":d:svh" opt; do
 done
 shift $((OPTIND -1))
 
-if [ -z $domain ]; then
+if [ -z "{$domain}" ]; then
 	echo "Need a domain to continue..."
 	exit 1;
 fi
 
 echo "Domain is ${domain}"
-echo "Scope File: ${sscope}"
+echo "Scope File: ${scope}"
 
 exit 1;
 

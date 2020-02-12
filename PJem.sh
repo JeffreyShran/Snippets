@@ -40,10 +40,10 @@ exit 1;
 while getopts ":d:s:vh" opt; do
   case "${opt}" in
     d )
-      domain=${OPTARG}
+      DOMAIN=${OPTARG}
       ;;
 	s )
-      scope=${OPTARG}
+      SCOPE=${OPTARG}
       ;;
 	v )
       echo "0.1" 1>&2;
@@ -65,7 +65,7 @@ while getopts ":d:s:vh" opt; do
 done
 shift $((OPTIND -1))
 
-if [ -z "$domain" ]; then
+if [ -z "$DOMAIN" ]; then
 	echo "Need a domain to continue..."
 	exit 1;
 fi
@@ -89,8 +89,8 @@ PATH_SCOPES="/root/hack/scopes"
 # Check for wildcard configuration on DNS before running Amass.
 # REF: medium.com/@noobhax/my-recon-process-dns-enumeration-d0e288f81a8a
 echo "Starting Amass"
-if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.${domain} +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
-	amass enum -config "$PATH_SCRIPTS/amass.config.ini" --passive -d ${domain} > "$PATH_RECON/amass.subdomains.${domain}.txt"
+if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.${DOMAIN} +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
+	amass enum -config "$PATH_SCRIPTS/amass.config.ini" --passive -d ${DOMAIN} > "$PATH_RECON/amass.subdomains.${DOMAIN}.txt"
 fi
 
 #------------------------------------------------------------------------------
@@ -102,27 +102,27 @@ fi
 # TODO: Large datasets return "jq: error (at <stdin>:16): Cannot iterate over null (null)"
 #------------------------------------------------------------------------------
 echo "Starting rapid7"
-curl "https://dns.bufferover.run/dns?q=${domain}" 2> /dev/null > "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt"
+curl "https://dns.bufferover.run/dns?q=${DOMAIN}" 2> /dev/null > "$PATH_RECON/rapid7.temp.subdomains.${DOMAIN}.txt"
 
-if [[ $(cat "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt" | grep "output limit reached" | wc -l) = 0 ]]; then
-	jq '.FDNS_A[]?,.RDNS[]?' "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt" |
-	sed 's/[^,]*,//;s/.$//' > "$PATH_RECON/rapid7.subdomains.${domain}.txt"
+if [[ $(cat "$PATH_RECON/rapid7.temp.subdomains.${DOMAIN}.txt" | grep "output limit reached" | wc -l) = 0 ]]; then
+	jq '.FDNS_A[]?,.RDNS[]?' "$PATH_RECON/rapid7.temp.subdomains.${DOMAIN}.txt" |
+	sed 's/[^,]*,//;s/.$//' > "$PATH_RECON/rapid7.subdomains.${DOMAIN}.txt"
 fi
 
-rm -f "$PATH_RECON/rapid7.temp.subdomains.${domain}.txt"
+rm -f "$PATH_RECON/rapid7.temp.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------
 # JeffSecSpeak2
 #------------------------------------------------------------------------------
 echo "Starting JeffSecSpeak2"
 cat "$PATH_WORDS/jeffspeak/subdomains/jeffsecspeak2.txt" |
-awk -v awkvar="${domain}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.subdomains.${domain}.txt"
+awk -v awkvar="${DOMAIN}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------
 # unique/sort & httprobe
 #------------------------------------------------------------------------------
 echo "Starting unique/sort & httprobe"
-FILES=("$PATH_RECON"/*"${domain}"*); sort -u "${FILES[@]}" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
+FILES=("$PATH_RECON"/*"${DOMAIN}"*); sort -u "${FILES[@]}" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
 httprobe -c 2000 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------

@@ -123,7 +123,7 @@ awk -v awkvar="${domain}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.sub
 #------------------------------------------------------------------------------
 echo "Starting unique/sort & httprobe"
 FILES=("$PATH_RECON"/*"${domain}"*); sort -u "${FILES[@]}" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
-httprobe -c 500 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
+httprobe -c 2000 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------
 # timer

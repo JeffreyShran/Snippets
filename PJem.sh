@@ -20,10 +20,10 @@ cat << EOF
 # Takes a domain and passes it through various tools generating output files onto github.
 #
 # INPUT: DOMAIN
-# RUN: wget -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/reconnaissance.sh" | bash /dev/stdin -h
+# RUN: wget -qO - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/pjem.sh" | bash /dev/stdin -v
 ######################################################################################################################################################
 
-usage: reconnaissance [OPTION]
+usage: pjem [OPTION]
 
 	-d DOMAIN	(required)      Do not include https. i.e. supply as example.com.
 	-s SCOPE	(Not required) 	Must be path to HackerOne burp configuration for burp, include full path. If included the whole thing is faster and more accurate.

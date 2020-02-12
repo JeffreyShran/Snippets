@@ -37,7 +37,7 @@ EOF
 exit 1; 
 }
 
-while getopts ":d:svh" opt; do
+while getopts ":d:s:vh" opt; do
   case "${opt}" in
     d )
       domain=${OPTARG}

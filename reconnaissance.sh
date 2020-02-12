@@ -70,8 +70,8 @@ if [ -z $domain ]; then
 	exit 1;
 fi
 
-echo "Domain is ${d}"
-echo "Scope File: ${s}"
+echo "Domain is ${domain}"
+echo "Scope File: ${sscope}"
 
 exit 1;
 

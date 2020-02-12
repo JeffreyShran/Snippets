@@ -65,13 +65,13 @@ while getopts ":d:s:vh" opt; do
 done
 shift $((OPTIND -1))
 
-if [ -z "{$d}" ]; then
+if [ -z "$domain" ]; then
 	echo "Need a domain to continue..."
 	exit 1;
 fi
 
 echo "Domain is ${domain}"
-echo "$d"
+echo "$domain"
 echo "Scope File: ${scope}"
 
 exit 1;

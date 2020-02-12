@@ -81,6 +81,7 @@ PATH_SCOPES="/root/hack/scopes"
 #
 # Before we do anything establish whats in or out of scope.
 #------------------------------------------------------------------------------
+# https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/master/data/hackerone_data.json
 # jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <"$PATH_SCOPES/${scope}" | tr -d '"' >"$PATH_SCOPES/excludes.${scope}"
 
 #------------------------------------------------------------------------------
@@ -92,6 +93,11 @@ echo "Starting Amass"
 if [[ $(dig @1.1.1.1 A,CNAME {$RANDOM,$RANDOM,$RANDOM}.${DOMAIN} +short | wc -l) < 2 ]]; then # 1 match allowed for tolerance.
 	amass enum -config "$PATH_SCRIPTS/amass.config.ini" --passive -d ${DOMAIN} > "$PATH_RECON/amass.subdomains.${DOMAIN}.txt"
 fi
+
+#------------------------------------------------------------------------------
+# anubis
+#------------------------------------------------------------------------------
+curl "https://jonlu.ca/anubis/subdomains/${DOMAIN}" | jq .[] -rc 2> /dev/null > "$PATH_RECON/anubis.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------
 # rapid7

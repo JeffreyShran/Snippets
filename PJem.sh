@@ -20,11 +20,11 @@ cat << EOF
 # ___  ,  _ ____ _  _ 
 # |__]    | |___ |\/| 
 # |      _| |___ |  | 
-#                   
+#
 # Takes a domain and passes it through various tools generating output files onto github.
 #
 # INPUT: DOMAIN
-# RUN: wget -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/PJem.sh" | bash /dev/stdin -d att.com
+# RUN: wget -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/pjem.sh" | bash /dev/stdin -d att.com
 ######################################################################################################################################################
 
 usage: pjem [OPTION]
@@ -88,9 +88,9 @@ PATH_SCOPES="/root/hack/scopes"
 # https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/master/data/hackerone_data.json
 # jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <"$PATH_SCOPES/${scope}" | tr -d '"' >"$PATH_SCOPES/excludes.${scope}"
 
-https://github.com/Edu4rdSHL/findomain
+#https://github.com/Edu4rdSHL/findomain
 
-https://github.com/projectdiscovery/subfinder
+#https://github.com/projectdiscovery/subfinder
 
 #------------------------------------------------------------------------------
 # Amass
@@ -105,7 +105,7 @@ fi
 #------------------------------------------------------------------------------
 # anubis
 #------------------------------------------------------------------------------
-curl "https://jonlu.ca/anubis/subdomains/${DOMAIN}" | jq .[] -rc 2> /dev/null > "$PATH_RECON/anubis.subdomains.${DOMAIN}.txt"
+curl "https://jonlu.ca/anubis/subdomains/${DOMAIN}" | jq .[]? -rc 2> /dev/null > "$PATH_RECON/anubis.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------
 # rapid7
@@ -137,7 +137,7 @@ awk -v awkvar="${DOMAIN}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.sub
 #------------------------------------------------------------------------------
 echo "Starting unique/sort & httprobe"
 FILES=("$PATH_RECON"/*"${DOMAIN}"*); sort -u "${FILES[@]}" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
-httprobe -c 2000 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
+httprobe -c 10000 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------
 # timer

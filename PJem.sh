@@ -169,3 +169,7 @@ echo "Script finished in $SECONDS seconds."
 #------------------------------------------------------------------------------
 # vhosts? Also see - https://twitter.com/joohoi/status/1222655322621390848?s=20
 # https://github.com/ffuf/ffuf
+#
+
+
+# https://github.com/urbanadventurer/whatweb

@@ -17,6 +17,10 @@ print_usage() {
 cat << EOF
 
 ######################################################################################################################################################
+# ___  ,  _ ____ _  _ 
+# |__]    | |___ |\/| 
+# |      _| |___ |  | 
+#                   
 # Takes a domain and passes it through various tools generating output files onto github.
 #
 # INPUT: DOMAIN
@@ -83,6 +87,10 @@ PATH_SCOPES="/root/hack/scopes"
 #------------------------------------------------------------------------------
 # https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/master/data/hackerone_data.json
 # jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <"$PATH_SCOPES/${scope}" | tr -d '"' >"$PATH_SCOPES/excludes.${scope}"
+
+https://github.com/Edu4rdSHL/findomain
+
+https://github.com/projectdiscovery/subfinder
 
 #------------------------------------------------------------------------------
 # Amass

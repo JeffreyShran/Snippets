@@ -37,7 +37,7 @@ usage: pjem [OPTION]
 Report bugs to: @jeffreyshran (Twitter)
 
 EOF
-1>&2; # Take the unix_commands standard error stream 2, and redirect > the stream (of errors) to the standard output memory address &1, so that they will be streamed to the terminal and printed.
+1>&2;
 exit 1; 
 }
 
@@ -83,7 +83,7 @@ PATH_SCOPES="/root/hack/scopes"
 #------------------------------------------------------------------------------
 # scope
 #
-# Before we do anything establish whats in or out of scope.
+# TODO: Before we do anything establish whats in or out of scope.
 #------------------------------------------------------------------------------
 # https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/master/data/hackerone_data.json
 # jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <"$PATH_SCOPES/${scope}" | tr -d '"' >"$PATH_SCOPES/excludes.${scope}"
@@ -136,8 +136,9 @@ awk -v awkvar="${DOMAIN}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.sub
 # unique/sort & httprobe
 #------------------------------------------------------------------------------
 echo "Starting unique/sort & httprobe"
-FILES=("$PATH_RECON"/*"${DOMAIN}"*); sort -u "${FILES[@]}" | tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
-httprobe -c 10000 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
+FILES=("$PATH_RECON"/*"${DOMAIN}"*); sort -u "${FILES[@]}" |
+tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
+# httprobe -c 10000 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------
 # timer

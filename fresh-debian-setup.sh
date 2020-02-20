@@ -128,7 +128,8 @@ go get github.com/OJ/gobuster
 git clone https://github.com/mazen160/bfac.git /root/hack/tools/bfac && pip3 install $_/.
 
 # Install tools > C
-git clone https://github.com/robertdavidgraham/masscan /root/hack/tools/masscan && make -j -C $_ && cp /root/hack/tools/masscan/bin/masscan /usr/local/bin
+git clone https://github.com/robertdavidgraham/masscan.git /root/hack/tools/masscan && make -j -C $_ && cp /root/hack/tools/masscan/bin/masscan /usr/local/bin
+git clone https://github.com/blechschmidt/massdns.git /root/hack/tools/massdns && make -j -C $_ && cp /root/hack/tools/massdns/bin/massdns /usr/local/bin
 
 # Install scripts
 wget https://raw.githubusercontent.com/OWASP/Amass/master/examples/config.ini -O amass.config.ini # This needs our keys adding into it.

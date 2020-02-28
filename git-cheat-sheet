@@ -1,0 +1,7 @@
+# Configuring user information used across all local repositories
+git config --global user.name "Jeff"
+git config --global user.email "10995361+JeffreyShran@users.noreply.github.com"
+# Commit and push changes
+git add -A && git commit -m "-"
+git push
+

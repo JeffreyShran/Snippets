@@ -88,6 +88,8 @@ PATH_SCOPES="/root/hack/scopes"
 # https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/master/data/hackerone_data.json
 # jq -rc '.target.scope.exclude | map(.host) | unique_by([]) | @csv' <"$PATH_SCOPES/${scope}" | tr -d '"' >"$PATH_SCOPES/excludes.${scope}"
 
+#https://bgp.he.net/
+
 #https://github.com/Edu4rdSHL/findomain
 
 #https://github.com/projectdiscovery/subfinder
@@ -104,6 +106,7 @@ fi
 
 #------------------------------------------------------------------------------
 # anubis
+# TODO: Create mega sub domain list.
 #------------------------------------------------------------------------------
 curl "https://jonlu.ca/anubis/subdomains/${DOMAIN}" | jq .[]? -rc 2> /dev/null > "$PATH_RECON/anubis.subdomains.${DOMAIN}.txt"
 
@@ -113,7 +116,6 @@ curl "https://jonlu.ca/anubis/subdomains/${DOMAIN}" | jq .[]? -rc 2> /dev/null >
 # https://github.com/erbbysam/DNSGrep - Roll Own. Limited to 100,000 rows returned.
 # https://blog.erbbysam.com/index.php/2019/02/09/dnsgrep/
 # https://blog.rapid7.com/2018/10/16/how-to-conduct-dns-reconnaissance-for-02-using-rapid7-open-data-and-aws/
-# TODO: Large datasets return "jq: error (at <stdin>:16): Cannot iterate over null (null)"
 #------------------------------------------------------------------------------
 echo "Starting rapid7"
 curl "https://dns.bufferover.run/dns?q=${DOMAIN}" 2> /dev/null > "$PATH_RECON/rapid7.temp.subdomains.${DOMAIN}.txt"
@@ -138,6 +140,7 @@ awk -v awkvar="${DOMAIN}" '{ print $0 "." awkvar;}' > "$PATH_RECON/jeffspeak.sub
 echo "Starting unique/sort & httprobe"
 FILES=("$PATH_RECON"/*"${DOMAIN}"*); sort -u "${FILES[@]}" |
 tee "${PATH_RECON}/unique.subdomains.${DOMAIN}.txt" |
+massdns ?????????????
 # httprobe -c 10000 -t 5000 > "${PATH_RECON}/httprobe.subdomains.${DOMAIN}.txt"
 
 #------------------------------------------------------------------------------

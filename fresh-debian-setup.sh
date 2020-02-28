@@ -16,8 +16,7 @@
 # SSH tunnel from powershell: ssh -D LOCALPORT USER@HOST -p REMOTEPORT
 # Remove the old SSH key from the local machine after a rebuild: ssh-keygen -R HOST
 # 
-# To execute the script, run the below command.
-# Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe. Frequent runs cause caching so added date var.
+# To execute the script, run the below command. Taken from - https://askubuntu.com/a/992451. "-O -" Allows us to output to nowhere and into the bash pipe.
 # apt update -qy && apt upgrade -qy && apt autoremove -qy && wget --no-cache -O - "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/fresh-debian-setup.sh?$(date +%s)" | bash
 #
 # You'll need to exit the SSH session to force bash refresh and read some paths that 'source' isn't handling correctly.
@@ -110,10 +109,7 @@ SOURCE_DIR=/root/hack/wordlists
 rm -f "$SOURCE_DIR/jeffspeak/subdomains/jeffsecspeak2.txt"
 mkdir -p /root/hack/wordlists/jeffspeak/subdomains/
 files=(
-"$SOURCE_DIR"/seclists/Discovery/DNS/shubs-subdomains.txt
-"$SOURCE_DIR"/seclists/Discovery/DNS/subdomains-top1million-5000.txt
 "$SOURCE_DIR"/seclists/Discovery/DNS/deepmagic.com-prefixes-top500.txt
-"$SOURCE_DIR"/seclists/Discovery/DNS/sortedcombined-knock-dnsrecon-fierce-reconng.txt
 "$SOURCE_DIR"/commonspeak2/subdomains/subdomains.txt
 )
 sort -u "${files[@]}" >"$SOURCE_DIR/jeffspeak/subdomains/jeffsecspeak2.txt"
@@ -131,7 +127,7 @@ git clone https://github.com/mazen160/bfac.git /root/hack/tools/bfac && pip3 ins
 git clone https://github.com/robertdavidgraham/masscan.git /root/hack/tools/masscan && make -j -C $_ && cp /root/hack/tools/masscan/bin/masscan /usr/local/bin
 git clone https://github.com/blechschmidt/massdns.git /root/hack/tools/massdns && make -j -C $_ && cp /root/hack/tools/massdns/bin/massdns /usr/local/bin
 
-# Install scripts
+# Install tools > Supporting scripts
 wget https://raw.githubusercontent.com/OWASP/Amass/master/examples/config.ini -O amass.config.ini # This needs our keys adding into it.
 
 # Change SSH port

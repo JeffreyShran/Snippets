@@ -94,6 +94,8 @@ PATH_SCOPES="/root/hack/scopes"
 
 #https://github.com/projectdiscovery/subfinder
 
+#https://github.com/projectdiscovery/shuffledns
+
 #------------------------------------------------------------------------------
 # Amass
 #------------------------------------------------------------------------------

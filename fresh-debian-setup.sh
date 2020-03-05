@@ -55,16 +55,6 @@ if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.c
   apt-get install -qy $pkgs
 fi
 
-# Temporarily we need a newer version of curl 7.66 and above for the -Z option
-curl --version | grep -E "^c" | cut -d' ' -f2
-curl https://curl.haxx.se/download/curl-7.69.0.tar.gz -OJ
-apt purge curl -y && apt autoremove -y
-tar xzvf curl-7.69.0.tar.gz
-cd curl-7.69.0/ 
-./configure && make && make install
-cp $(which curl) /usr/bin
-cd /root
-
 # Remove /root/.bash_aliases and recreate dotfile from GitHub.
 # These are personalised bash commands and entirely optional
 rm -f /root/.bash_aliases # -f will ignore nonexistent files, never prompt.
@@ -102,6 +92,7 @@ git clone https://github.com/blechschmidt/massdns.git /root/hack/tools/massdns &
 
 # Install tools > Supporting scripts
 wget https://raw.githubusercontent.com/OWASP/Amass/master/examples/config.ini -O amass.config.ini # This needs our keys adding into it.
+curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/trustedresolvers.txt" --create-dirs -o "/root/hack/wordlists/resolvers/trustedresolvers.txt"
 
 # Change SSH port
 echo "Port 4321" >> /etc/ssh/sshd_config

@@ -48,6 +48,7 @@ git
 libpcap-dev
 jq
 ncat
+nmap
 python3-pip
 python3
 '

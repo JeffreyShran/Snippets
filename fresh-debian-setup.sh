@@ -31,14 +31,14 @@
 # -x prints each command that is going to be executed
 #set -x
 
-# Needs root access to continue
+# Needs ~ access to continue
 if ! [ $(id -u) = 0 ] >/dev/null 2>&1; then # id -u used as POSIX compliant: https://askubuntu.com/a/30157
-  echo "This script needs to be ran as interactive root. Switch to 'sudo -i' and try again."
+  echo "This script needs to be ran as interactive ~. Switch to 'sudo -i' and try again."
   exit 1
 fi
 
 # Create directory structure
-mkdir -p /root/hack/{git,reconnaissance,scopes,scripts,tools,wordlists}
+mkdir -p /~/hack/{git,reconnaissance,scopes,scripts,tools,wordlists}
 
 # Install core utilities
 # dpkg will check if the application exists before attempting an install
@@ -55,22 +55,22 @@ if ! dpkg -s $pkgs >/dev/null 2>&1; then # Script from - https://stackoverflow.c
   apt-get install -qy $pkgs
 fi
 
-# Remove /root/.bash_aliases and recreate dotfile from GitHub.
+# Remove ~/.bash_aliases and recreate dotfile from GitHub.
 # These are personalised bash commands and entirely optional
-rm -f /root/.bash_aliases # -f will ignore nonexistent files, never prompt.
-curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "/root/.bash_aliases"
+rm -f ~/.bash_aliases # -f will ignore nonexistent files, never prompt.
+curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliases" --create-dirs -o "~/.bash_aliases"
 
 # Setup & install golang
 # Debian sources are out of date so we need to sort it out manually
 wget -O - "https://raw.githubusercontent.com/JeffreyShran/goJeffgo/master/goJeffgo.sh" | bash
 
 # Create > WORDLISTS
-git clone https://github.com/danielmiessler/SecLists.git /root/hack/wordlists/seclists
-git clone https://github.com/assetnote/commonspeak2-wordlists.git /root/hack/wordlists/commonspeak2
+git clone https://github.com/danielmiessler/SecLists.git ~/hack/wordlists/seclists
+git clone https://github.com/assetnote/commonspeak2-wordlists.git ~/hack/wordlists/commonspeak2
 
-SOURCE_DIR=/root/hack/wordlists
+SOURCE_DIR=~/hack/wordlists
 rm -f "$SOURCE_DIR/jeffspeak/subdomains/jeffsecspeak2.txt"
-mkdir -p /root/hack/wordlists/jeffspeak/subdomains/
+mkdir -p ~/hack/wordlists/jeffspeak/subdomains/
 files=(
 "$SOURCE_DIR"/seclists/Discovery/DNS/deepmagic.com-prefixes-top500.txt
 "$SOURCE_DIR"/commonspeak2/subdomains/subdomains.txt
@@ -84,15 +84,15 @@ go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
 
 # Install tools > PYTHON
-git clone https://github.com/mazen160/bfac.git /root/hack/tools/bfac && pip3 install $_/.
+git clone https://github.com/mazen160/bfac.git /~/hack/tools/bfac && pip3 install $_/.
 
 # Install tools > C
-git clone https://github.com/robertdavidgraham/masscan.git /root/hack/tools/masscan && make -j -C $_ && cp /root/hack/tools/masscan/bin/masscan /usr/local/bin
-git clone https://github.com/blechschmidt/massdns.git /root/hack/tools/massdns && make -j -C $_ && cp /root/hack/tools/massdns/bin/massdns /usr/local/bin
+git clone https://github.com/robertdavidgraham/masscan.git /~/hack/tools/masscan && make -j -C $_ && cp /~/hack/tools/masscan/bin/masscan /usr/local/bin
+git clone https://github.com/blechschmidt/massdns.git /~/hack/tools/massdns && make -j -C $_ && cp /~/hack/tools/massdns/bin/massdns /usr/local/bin
 
 # Install tools > Supporting scripts
 wget https://raw.githubusercontent.com/OWASP/Amass/master/examples/config.ini -O amass.config.ini # This needs our keys adding into it.
-curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/trustedresolvers.txt" --create-dirs -o "/root/hack/wordlists/resolvers/trustedresolvers.txt"
+curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/trustedresolvers.txt" --create-dirs -o "/~/hack/wordlists/resolvers/trustedresolvers.txt"
 
 # Change SSH port
 echo "Port 4321" >> /etc/ssh/sshd_config

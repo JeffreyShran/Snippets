@@ -38,7 +38,7 @@ if ! [ $(id -u) = 0 ] >/dev/null 2>&1; then # id -u used as POSIX compliant: htt
 fi
 
 # Create directory structure
-mkdir -p /~/hack/{git,reconnaissance,scopes,scripts,tools,wordlists}
+mkdir -p ~/hack/{git,reconnaissance,scopes,scripts,tools,wordlists}
 
 # Install core utilities
 # dpkg will check if the application exists before attempting an install
@@ -84,15 +84,15 @@ go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
 
 # Install tools > PYTHON
-git clone https://github.com/mazen160/bfac.git /~/hack/tools/bfac && pip3 install $_/.
+git clone https://github.com/mazen160/bfac.git ~/hack/tools/bfac && pip3 install $_/.
 
 # Install tools > C
-git clone https://github.com/robertdavidgraham/masscan.git /~/hack/tools/masscan && make -j -C $_ && cp /~/hack/tools/masscan/bin/masscan /usr/local/bin
-git clone https://github.com/blechschmidt/massdns.git /~/hack/tools/massdns && make -j -C $_ && cp /~/hack/tools/massdns/bin/massdns /usr/local/bin
+git clone https://github.com/robertdavidgraham/masscan.git ~/hack/tools/masscan && make -j -C $_ && cp ~/hack/tools/masscan/bin/masscan /usr/local/bin
+git clone https://github.com/blechschmidt/massdns.git ~/hack/tools/massdns && make -j -C $_ && cp ~/hack/tools/massdns/bin/massdns /usr/local/bin
 
 # Install tools > Supporting scripts
 wget https://raw.githubusercontent.com/OWASP/Amass/master/examples/config.ini -O amass.config.ini # This needs our keys adding into it.
-curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/trustedresolvers.txt" --create-dirs -o "/~/hack/wordlists/resolvers/trustedresolvers.txt"
+curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/trustedresolvers.txt" --create-dirs -o "~/hack/wordlists/resolvers/trustedresolvers.txt"
 
 # Change SSH port
 echo "Port 4321" >> /etc/ssh/sshd_config

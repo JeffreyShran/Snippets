@@ -82,6 +82,7 @@ export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/...
 go get -u github.com/tomnomnom/httprobe
 go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
+git clone --recursive https://github.com/screetsec/Sudomy.git ~/hack/tools/sudomy && cp ~/hack/tools/sudomy/sudomy /usr/local/bin # pip3 too: https://github.com/Screetsec/Sudomy
 
 # Install tools > PYTHON
 git clone https://github.com/mazen160/bfac.git ~/hack/tools/bfac && pip3 install $_/.

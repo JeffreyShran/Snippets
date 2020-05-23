@@ -6,6 +6,18 @@ __author__ = "@JeffreyShran"
 __version__ = "0.0.1"
 __license__ = "MIT"
 
+"""
+ACTION LIST
+
+- Add a notes_URL.txt in each folder upon creation with header style:
+
+################################################## 
+#   OBSERVATIONS
+##################################################
+
+
+"""
+
 import sys, logging, os
 import argparse
 from urllib.parse import urlsplit

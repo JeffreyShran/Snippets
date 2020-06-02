@@ -11,7 +11,7 @@ ACTION LIST
 
 - Add a notes_URL.txt in each folder upon creation with header style:
 
-################################################## 
+##################################################
 #   OBSERVATIONS
 ##################################################
 
@@ -25,29 +25,29 @@ from pathlib import Path
 
 def main(args):
     """ Main entry point of the app """
-    
+
     # Logging config: https://docs.python.org/3/howto/logging.html
     logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(levelname)s: %(message)s')
 
     # make top level directory variable
     topDir = args.path + args.target
 
-    logging.debug('The topDir is set to: %s' % topDir)  
+    logging.debug('The topDir is set to: %s' % topDir)
 
     # Check for dodgy custom paths on argument inputs.
     if not Path(args.path).is_dir():
         sys.exit('The path "%s" specified does not exist' % args.path)
 
-    logging.info('Using path "%s". Continue...' % args.path)  
-    
+    logging.info('Using path "%s". Continue...' % args.path)
+
     # Safely create directory, no error raised if exists, does not overwrite existing.
     Path(topDir).mkdir(exist_ok=True)
 
     # Read URL's from standard input
     for url in sys.stdin:
-        
+
         parsed = urlsplit(url)
-        
+
         # catch any urls that can't be split due to no scheme
         if not all([parsed.scheme, parsed.netloc]):
             parsed = urlsplit("https://" + url)
@@ -78,15 +78,15 @@ if __name__ == "__main__":
         required = True,
         metavar = 'target',
         type = str,
-        help = 'The top level working directory. No slash.')
+        help = 'The target working directory. No slash.')
     ap.add_argument(
         '-p',
         '--path',
         required = False,
         metavar = 'path',
         type = str,
-        help = 'Is a non default path. Give in the format /mnt/mount/folder/',
-        default = '/mnt/e/GDrive/YNAW/HackWiki/Programs/')
+        help = 'Top level directory. Give in the format /mnt/mount/folder/',
+        default = '/mnt/e/recon_data/')
 
     args = ap.parse_args()
     main(args)

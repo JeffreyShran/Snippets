@@ -86,7 +86,7 @@ if __name__ == "__main__":
         metavar = 'path',
         type = str,
         help = 'Top level directory. Give in the format /mnt/mount/folder/',
-        default = '/mnt/e/recon_data/')
+        default = '/mnt/e/recon_data/programs/')
 
     args = ap.parse_args()
     main(args)

@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -18,7 +17,7 @@ ACTION LIST
 
 """
 
-import sys, logging, os
+import sys, os
 import argparse
 from urllib.parse import urlsplit
 from pathlib import Path
@@ -26,19 +25,12 @@ from pathlib import Path
 def main(args):
     """ Main entry point of the app """
 
-    # Logging config: https://docs.python.org/3/howto/logging.html
-    logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(levelname)s: %(message)s')
-
     # make top level directory variable
     topDir = args.path + args.target
-
-    logging.debug('The topDir is set to: %s' % topDir)
 
     # Check for dodgy custom paths on argument inputs.
     if not Path(args.path).is_dir():
         sys.exit('The path "%s" specified does not exist' % args.path)
-
-    logging.info('Using path "%s". Continue...' % args.path)
 
     # Safely create directory, no error raised if exists, does not overwrite existing.
     Path(topDir).mkdir(exist_ok=True)
@@ -59,7 +51,7 @@ def main(args):
         # Create an empty folder if the host name hasn't already been seen.
         Path(destinationDir).mkdir(exist_ok=True)
         # Progress report
-        logging.info('Last host - %s' % host)
+        # print(host)
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """

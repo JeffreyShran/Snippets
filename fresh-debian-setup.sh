@@ -66,8 +66,9 @@ curl "https://raw.githubusercontent.com/JeffreyShran/Snippets/master/bash_aliase
 wget -O - "https://raw.githubusercontent.com/JeffreyShran/goJeffgo/master/goJeffgo.sh" | bash
 
 # Create > WORDLISTS
-git clone https://github.com/danielmiessler/SecLists.git ~/hack/wordlists/seclists
-git clone https://github.com/assetnote/commonspeak2-wordlists.git ~/hack/wordlists/commonspeak2
+git clone https://github.com/cqsd/daily-commonspeak2.git ~/wordlists/daily-commonspeak2
+git clone https://github.com/danielmiessler/SecLists.git ~/wordlists/seclists
+git clone https://github.com/assetnote/commonspeak2-wordlists.git ~/wordlists/commonspeak2
 
 SOURCE_DIR=~/hack/wordlists
 rm -f "$SOURCE_DIR/jeffspeak/subdomains/jeffsecspeak2.txt"
@@ -83,14 +84,14 @@ export GO111MODULE=on && go get -v -u github.com/OWASP/Amass/v3/...
 go get -u github.com/tomnomnom/httprobe
 go get -u github.com/tomnomnom/waybackurls
 go get github.com/OJ/gobuster
-git clone --recursive https://github.com/screetsec/Sudomy.git ~/hack/tools/sudomy && cp ~/hack/tools/sudomy/sudomy /usr/local/bin # pip3 too: https://github.com/Screetsec/Sudomy
+git clone --recursive https://github.com/screetsec/Sudomy.git ~/tools/sudomy && cp ~/tools/sudomy/sudomy /usr/local/bin # pip3 too: https://github.com/Screetsec/Sudomy
 
 # Install tools > PYTHON
-git clone https://github.com/mazen160/bfac.git ~/hack/tools/bfac && pip3 install $_/.
+git clone https://github.com/mazen160/bfac.git ~/tools/bfac && pip3 install $_/.
 
 # Install tools > C
-git clone https://github.com/robertdavidgraham/masscan.git ~/hack/tools/masscan && make -j -C $_ && cp ~/hack/tools/masscan/bin/masscan /usr/local/bin
-git clone https://github.com/blechschmidt/massdns.git ~/hack/tools/massdns && make -j -C $_ && cp ~/hack/tools/massdns/bin/massdns /usr/local/bin
+git clone https://github.com/robertdavidgraham/masscan.git ~/tools/masscan && make -j -C $_ && sudo cp ~/tools/masscan/bin/masscan /usr/local/bin
+git clone https://github.com/blechschmidt/massdns.git ~/tools/massdns && make -j -C $_ && sudo cp ~/tools/massdns/bin/massdns /usr/local/bin
 
 # Install tools > Supporting scripts
 wget https://raw.githubusercontent.com/OWASP/Amass/master/examples/config.ini -O amass.config.ini # This needs our keys adding into it.

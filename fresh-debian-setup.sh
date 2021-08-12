@@ -21,6 +21,8 @@
 #
 # You'll need to exit the SSH session to force bash refresh and read some paths that 'source' isn't handling correctly.
 #
+# useradd -s /bin/bash -d /home/jeff/ -m -G sudo jeff
+#
 # Any feedback welcomed here or on twitter.
 # 
 # This is a living script that will evolve as my personal needs change over time.
